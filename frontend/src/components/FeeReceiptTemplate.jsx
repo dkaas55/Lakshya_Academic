@@ -20,30 +20,30 @@ function formatDate(iso) {
 }
 
 const tailwindHexColors = {
-  '--color-slate-50': '#f8fafc',
-  '--color-slate-100': '#f1f5f9',
-  '--color-slate-200': '#e2e8f0',
-  '--color-slate-300': '#cbd5e1',
-  '--color-slate-400': '#94a3b8',
-  '--color-slate-500': '#64748b',
-  '--color-slate-600': '#475569',
-  '--color-slate-700': '#334155',
-  '--color-slate-800': '#1e293b',
-  '--color-slate-900': '#0f172a',
-  '--color-emerald-50': '#ecfdf5',
-  '--color-emerald-200': '#a7f3d0',
-  '--color-emerald-500': '#10b981',
+  '--color-slate-50': '#f1f5f9',      // Light steel grey bg tint
+  '--color-slate-100': '#cbd5e1',     // Soft slate border
+  '--color-slate-200': '#cbd5e1',     // Border
+  '--color-slate-300': '#cbd5e1',     
+  '--color-slate-400': '#475569',     // Muted text
+  '--color-slate-500': '#334155',     // Text muted
+  '--color-slate-600': '#090d16',     // Main body text
+  '--color-slate-700': '#090d16',     
+  '--color-slate-800': '#090d16',     
+  '--color-slate-900': '#090d16',     // Dark headings
+  '--color-emerald-50': '#f0fdf4',    // Soft Green bg (paid status)
+  '--color-emerald-200': '#bbf7d0',   // Soft Green border
+  '--color-emerald-500': '#10b981',   // Green accent
   '--color-emerald-600': '#059669',
   '--color-emerald-700': '#047857',
-  '--color-indigo-50': '#eef2ff',
-  '--color-indigo-200': '#c7d2fe',
-  '--color-indigo-600': '#4f46e5',
-  '--color-violet-600': '#7c3aed',
-  '--color-sky-50': '#f0f9ff',
-  '--color-sky-200': '#bae6fd',
-  '--color-sky-500': '#0ea5e9',
-  '--color-sky-700': '#0369a1',
-  '--color-amber-600': '#d97706',
+  '--color-indigo-50': '#f1f5f9',     // Highlight tint
+  '--color-indigo-200': '#cbd5e1',    // Slate border
+  '--color-indigo-600': '#090d16',    // Deep Steel brand primary
+  '--color-violet-600': '#1e293b',    // Secondary Steel Blue
+  '--color-sky-50': '#eff6ff',        // Soft Cobalt Blue bg
+  '--color-sky-200': '#bfdbfe',       // Soft Cobalt Blue border
+  '--color-sky-500': '#1d4ed8',       // Cobalt Blue brand accent
+  '--color-sky-700': '#1e40af',
+  '--color-amber-600': '#d97706',     // Amber for warning states
   '--color-amber-700': '#b45309',
   '--color-white': '#ffffff',
 }
@@ -55,15 +55,20 @@ export default function FeeReceiptTemplate({ receiptInfo, student }) {
     amount = 0,
     amountDue = 0,
     totalCourseFee = 0,
+    monthlyFeeAmount = 0,
     paymentMode = '—',
     paidAt = new Date().toISOString(),
     receiptNumber = '—',
   } = receiptInfo
 
+  const totalAmountToPay = amountDue + amount;
+  const previousDue = totalAmountToPay - monthlyFeeAmount;
+
   const isPaid = amountDue <= 0
 
   return (
-    <div className="w-[700px] min-h-[950px] bg-white text-slate-800 p-12 flex flex-col justify-between relative border border-slate-100 font-sans" style={tailwindHexColors}>
+    <div className="w-[700px] min-h-[950px] bg-white text-slate-800 p-12 flex flex-col justify-between relative border border-slate-100 font-sans" style={{ ...tailwindHexColors, fontFamily: '"Outfit", sans-serif' }}>
+      <style dangerouslySetInnerHTML={{ __html: `@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');` }} />
       {/* Watermark for fully paid */}
       {isPaid && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden z-0">
@@ -78,7 +83,8 @@ export default function FeeReceiptTemplate({ receiptInfo, student }) {
         <div className="flex items-start justify-between pb-6 border-b-2 border-indigo-600">
           <div>
             <h1 className="text-2xl font-extrabold text-indigo-600 tracking-tight flex items-center gap-2">
-              <span>📚</span> EduInstitute
+              <img src="/logo.png" alt="Lakshya Academic Institute" className="h-8 object-contain" />
+              Lakshya Academic Institute
             </h1>
             <p className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold mt-1">
               Excellence in Education
@@ -190,19 +196,33 @@ export default function FeeReceiptTemplate({ receiptInfo, student }) {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 <tr>
-                  <td className="px-5 py-4 text-slate-600">Total Course Fee</td>
+                  <td className="px-5 py-4 text-slate-600">This Month's Fee</td>
                   <td className="px-5 py-4 text-right font-semibold text-slate-800">
-                    {formatCurrency(totalCourseFee)}
+                    {formatCurrency(monthlyFeeAmount)}
+                  </td>
+                </tr>
+                {previousDue > 0 && (
+                  <tr>
+                    <td className="px-5 py-4 text-slate-600">Previous Due Amount</td>
+                    <td className="px-5 py-4 text-right font-semibold text-slate-800">
+                      {formatCurrency(previousDue)}
+                    </td>
+                  </tr>
+                )}
+                <tr className="bg-slate-50">
+                  <td className="px-5 py-4 text-slate-600 font-bold">Total Amount to be Paid</td>
+                  <td className="px-5 py-4 text-right font-bold text-slate-800 text-sm">
+                    {formatCurrency(totalAmountToPay)}
                   </td>
                 </tr>
                 <tr>
-                  <td className="px-5 py-4 text-slate-600 font-semibold">This Installment</td>
+                  <td className="px-5 py-4 text-slate-600 font-semibold">Amount Paid</td>
                   <td className="px-5 py-4 text-right font-bold text-emerald-600 text-sm">
                     {formatCurrency(amount)}
                   </td>
                 </tr>
                 <tr>
-                  <td className="px-5 py-4 text-slate-600">Balance Remaining</td>
+                  <td className="px-5 py-4 text-slate-600">Pending Amount</td>
                   <td className={`px-5 py-4 text-right font-bold text-sm ${amountDue > 0 ? 'text-amber-600' : 'text-emerald-600'}`}>
                     {formatCurrency(amountDue)}
                   </td>
@@ -222,7 +242,7 @@ export default function FeeReceiptTemplate({ receiptInfo, student }) {
           <p className="text-xs text-slate-600 leading-relaxed">
             Thank you for your payment of <strong className="text-indigo-600 font-semibold">{formatCurrency(amount)}</strong> towards{' '}
             <strong className="text-slate-800 font-semibold">{student.fullName}</strong>'s course fee. We appreciate your partnership with{' '}
-            <strong className="text-indigo-600 font-semibold">EduInstitute</strong>.
+            <strong className="text-indigo-600 font-semibold">Lakshya Academic Institute</strong>.
             {amountDue > 0 ? (
               <span>
                 {' '}A balance of <strong className="text-amber-700 font-semibold">{formatCurrency(amountDue)}</strong> remains. Please make timely payments to avoid interruption.

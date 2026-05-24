@@ -124,28 +124,28 @@ export default function StudentEditModal({ student, onClose, onUpdated }) {
     >
       <button
         type="button"
-        className="absolute inset-0 bg-slate-900/50 backdrop-blur-[2px]"
+        className="absolute inset-0 bg-brand-text/30 backdrop-blur-[2px]"
         aria-label="Close edit modal"
         onClick={onClose}
       />
 
       <div
-        className="relative w-full max-w-md overflow-hidden flex flex-col rounded-t-2xl sm:rounded-2xl border border-slate-200 bg-white shadow-xl"
+        className="relative w-full max-w-md overflow-hidden flex flex-col rounded-t-2xl sm:rounded-2xl border border-brand-border bg-brand-surface shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-start justify-between gap-3 px-4 sm:px-5 py-4 border-b border-slate-100 bg-slate-50/80 shrink-0">
+        <div className="flex items-start justify-between gap-3 px-4 sm:px-5 py-4 border-b border-brand-border bg-brand-surface-tint/80 shrink-0">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-brand-text-muted">
               Edit Profile
             </p>
-            <h2 id="student-edit-title" className="text-base font-semibold text-slate-900 mt-0.5">
+            <h2 id="student-edit-title" className="text-base font-semibold text-brand-text mt-0.5">
               {student.fullName}
             </h2>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-200/60 hover:text-slate-600 transition-colors"
+            className="rounded-lg p-1.5 text-brand-text-muted/75 hover:bg-brand-surface-tint hover:text-brand-text transition-colors"
             aria-label="Close"
           >
             ✕
@@ -164,7 +164,7 @@ export default function StudentEditModal({ student, onClose, onUpdated }) {
 
           <div className="space-y-4">
             <div>
-              <label htmlFor="edit-fullName" className="block text-xs font-medium text-slate-700 mb-1">
+              <label htmlFor="edit-fullName" className="block text-xs font-medium text-brand-text mb-1">
                 Full Name
               </label>
               <input
@@ -173,12 +173,12 @@ export default function StudentEditModal({ student, onClose, onUpdated }) {
                 required
                 value={form.fullName}
                 onChange={(e) => updateField('fullName', e.target.value)}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-brand-border px-3 py-2 text-sm text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
               />
             </div>
 
             <div>
-              <label htmlFor="edit-phoneNumber" className="block text-xs font-medium text-slate-700 mb-1">
+              <label htmlFor="edit-phoneNumber" className="block text-xs font-medium text-brand-text mb-1">
                 Phone Number
               </label>
               <input
@@ -187,12 +187,12 @@ export default function StudentEditModal({ student, onClose, onUpdated }) {
                 required
                 value={form.phoneNumber}
                 onChange={(e) => updateField('phoneNumber', e.target.value)}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-brand-border px-3 py-2 text-sm text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
               />
             </div>
 
             <div>
-              <label htmlFor="edit-batch" className="block text-xs font-medium text-slate-700 mb-1">
+              <label htmlFor="edit-batch" className="block text-xs font-medium text-brand-text mb-1">
                 Batch
               </label>
               <select
@@ -200,7 +200,7 @@ export default function StudentEditModal({ student, onClose, onUpdated }) {
                 required
                 value={form.batch}
                 onChange={(e) => updateField('batch', e.target.value)}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-brand-border px-3 py-2 text-sm text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
               >
                 {BATCH_OPTIONS.map((option) => (
                   <option key={option} value={option}>
@@ -211,14 +211,14 @@ export default function StudentEditModal({ student, onClose, onUpdated }) {
             </div>
 
             <div>
-              <label htmlFor="edit-class" className="block text-xs font-medium text-slate-700 mb-1">
+              <label htmlFor="edit-class" className="block text-xs font-medium text-brand-text mb-1">
                 Class
               </label>
               <select
                 id="edit-class"
                 value={form.studentClass}
                 onChange={(e) => updateField('studentClass', e.target.value)}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-brand-border px-3 py-2 text-sm text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
               >
                 <option value="">— Select class —</option>
                 {CLASS_OPTIONS.map((c) => (
@@ -228,7 +228,7 @@ export default function StudentEditModal({ student, onClose, onUpdated }) {
             </div>
 
             <div>
-              <label htmlFor="edit-subjects" className="block text-xs font-medium text-slate-700 mb-1">
+              <label htmlFor="edit-subjects" className="block text-xs font-medium text-brand-text mb-1">
                 Subjects
               </label>
               <input
@@ -238,12 +238,12 @@ export default function StudentEditModal({ student, onClose, onUpdated }) {
                 value={form.subjects}
                 onChange={(e) => updateField('subjects', e.target.value)}
                 placeholder="e.g. Mathematics, Physics"
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-brand-border px-3 py-2 text-sm text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
               />
               <datalist id="edit-subject-list">
                 {SUBJECT_OPTIONS.map((s) => <option key={s} value={s} />)}
               </datalist>
-              <p className="mt-1 text-[10px] text-slate-400">Comma-separate multiple subjects</p>
+              <p className="mt-1 text-[10px] text-brand-text-muted/75">Comma-separate multiple subjects</p>
             </div>
           </div>
 
@@ -252,14 +252,14 @@ export default function StudentEditModal({ student, onClose, onUpdated }) {
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="rounded-lg px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-100 transition-colors disabled:opacity-50"
+              className="rounded-lg px-4 py-2 text-xs font-medium text-brand-text hover:bg-brand-surface-tint transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="rounded-lg bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-500 transition-colors disabled:opacity-50"
+              className="rounded-lg bg-brand-primary px-4 py-2 text-xs font-semibold text-brand-surface hover:bg-brand-primary/100 transition-colors disabled:opacity-50"
             >
               {loading ? 'Saving…' : 'Save Changes'}
             </button>

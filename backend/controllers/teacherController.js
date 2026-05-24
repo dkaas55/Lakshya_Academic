@@ -20,7 +20,7 @@ const getTeacherDashboard = async (req, res) => {
         batch: { $in: assignedBatches },
         status: { $ne: "removed" }, // exclude removed students
       })
-        .populate("user", "name email")
+        .populate("user", "name username")
         .sort({ batch: 1, createdAt: -1 })
         .lean();
 
@@ -51,7 +51,7 @@ const getTeacherDashboard = async (req, res) => {
         teacher: {
           id: teacher._id,
           name: teacher.name,
-          email: teacher.email,
+          username: teacher.username,
           assignedBatches,
         },
         students,

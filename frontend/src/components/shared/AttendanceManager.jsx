@@ -13,13 +13,13 @@ const ALL_BATCH_OPTIONS = [
 // ── Small helpers ─────────────────────────────────────────────────────────────
 function StatusPill({ status, count }) {
   const cfg = {
-    Present: { bg: 'bg-emerald-50 text-emerald-700 border-emerald-200', dot: 'bg-emerald-500' },
-    Late:    { bg: 'bg-amber-50 text-amber-700 border-amber-200',       dot: 'bg-amber-400'   },
-    Absent:  { bg: 'bg-rose-50 text-rose-700 border-rose-200',          dot: 'bg-rose-500'    },
-  }[status] ?? { bg: 'bg-slate-50 text-slate-600 border-slate-200', dot: 'bg-slate-400' }
+    Present: { bg: 'bg-brand-primary/10 text-brand-primary border-brand-primary/20', dot: 'bg-brand-primary' },
+    Late:    { bg: 'bg-brand-gold/15 text-brand-gold border-brand-gold/25',         dot: 'bg-brand-gold'   },
+    Absent:  { bg: 'bg-brand-accent/10 text-brand-accent border-brand-accent/20',    dot: 'bg-brand-accent'    },
+  }[status] ?? { bg: 'bg-brand-surface-tint text-brand-text-muted border-brand-border', dot: 'bg-brand-text-muted' }
 
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold ${cfg.bg}`}>
+    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-bold transition-all ${cfg.bg}`}>
       <span className={`h-1.5 w-1.5 rounded-full ${cfg.dot}`} />
       {count} {status}
     </span>
@@ -27,11 +27,11 @@ function StatusPill({ status, count }) {
 }
 
 function PctBadge({ pct }) {
-  if (pct === null) return <span className="text-[11px] text-slate-400">—</span>
+  if (pct === null) return <span className="text-[11px] text-brand-text-muted">—</span>
   const cls =
-    pct >= 85 ? 'bg-emerald-50 text-emerald-700 ring-emerald-200' :
-    pct >= 75 ? 'bg-amber-50 text-amber-700 ring-amber-200' :
-                'bg-rose-50 text-rose-700 ring-rose-200'
+    pct >= 85 ? 'bg-brand-primary/10 text-brand-primary ring-brand-primary/20' :
+    pct >= 75 ? 'bg-brand-gold/15 text-brand-gold ring-brand-gold/25' :
+                'bg-brand-accent/10 text-brand-accent ring-brand-accent/20'
   return (
     <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-bold ring-1 ${cls}`}>
       {pct}%
@@ -76,43 +76,45 @@ function AttendanceHistoryView({ allowedBatches }) {
   return (
     <div className="space-y-5">
       {/* Controls */}
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="rounded-2xl border border-brand-border bg-brand-surface p-5 shadow-sm">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <label className="block text-xs font-medium text-slate-700 mb-1">Batch</label>
+            <label className="block text-xs font-semibold text-brand-text mb-1.5">Batch</label>
             <select
               value={batch}
               onChange={(e) => setBatch(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full rounded-xl border border-brand-border bg-brand-surface px-4 py-2.5 text-sm text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-primary transition-all"
             >
               {batches.map((b) => <option key={b} value={b}>{b}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700 mb-1">From Date</label>
+            <label className="block text-xs font-semibold text-brand-text mb-1.5">From Date</label>
             <input
               type="date"
               value={dateFrom}
               onChange={(e) => setDateFrom(e.target.value)}
               max={new Date().toISOString().split('T')[0]}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
+              className="w-full rounded-xl border border-brand-border bg-brand-surface px-4 py-2.5 text-sm text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-primary transition-all"
+            >
+            </input>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-700 mb-1">To Date</label>
+            <label className="block text-xs font-semibold text-brand-text mb-1.5">To Date</label>
             <input
               type="date"
               value={dateTo}
               onChange={(e) => setDateTo(e.target.value)}
               max={new Date().toISOString().split('T')[0]}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
+              className="w-full rounded-xl border border-brand-border bg-brand-surface px-4 py-2.5 text-sm text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-primary transition-all"
+            >
+            </input>
           </div>
           <div className="flex items-end">
             <button
               onClick={fetchHistory}
               disabled={loading}
-              className="w-full rounded-lg bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-500 disabled:opacity-60 transition-colors shadow-sm"
+              className="w-full rounded-xl bg-brand-primary hover:bg-brand-primary/90 px-4 py-3 text-xs font-bold text-brand-surface disabled:opacity-60 transition-all shadow-sm cursor-pointer"
             >
               {loading ? 'Loading…' : 'Load Report'}
             </button>
@@ -121,14 +123,14 @@ function AttendanceHistoryView({ allowedBatches }) {
       </div>
 
       {error && (
-        <p className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{error}</p>
+        <p className="text-xs text-brand-accent bg-brand-accent/5 border border-brand-accent/10 rounded-xl px-4 py-3">{error}</p>
       )}
 
       {result && (
         <div className="space-y-4">
           {/* Summary strip */}
-          <div className="flex items-center gap-3 flex-wrap text-[11px] text-slate-500">
-            <span className="font-semibold text-slate-700">{result.batch}</span>
+          <div className="flex items-center gap-3 flex-wrap text-[11px] text-brand-text-muted">
+            <span className="font-bold text-brand-text">{result.batch}</span>
             <span>·</span>
             <span>{result.totalClassDays} class day{result.totalClassDays !== 1 ? 's' : ''} recorded</span>
             {result.dateFrom && <><span>·</span><span>From {result.dateFrom} to {result.dateTo || 'today'}</span></>}
@@ -138,63 +140,63 @@ function AttendanceHistoryView({ allowedBatches }) {
           <StudentFilterBar
             students={result.students || []}
             onFilterChange={setFiltered}
-            accentColor="indigo"
+            accentColor="emerald"
           />
 
           {/* Table */}
-          <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+          <div className="rounded-2xl border border-brand-border bg-brand-surface shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="min-w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50">
-                    <th className="px-4 py-3 font-semibold text-slate-600">Student</th>
-                    <th className="px-4 py-3 font-semibold text-slate-600 text-center">Present</th>
-                    <th className="px-4 py-3 font-semibold text-slate-600 text-center">Late</th>
-                    <th className="px-4 py-3 font-semibold text-slate-600 text-center">Absent</th>
-                    <th className="px-4 py-3 font-semibold text-slate-600 text-center">Total</th>
-                    <th className="px-4 py-3 font-semibold text-slate-600 text-center">Attendance</th>
+                  <tr className="border-b border-brand-border bg-brand-surface-tint">
+                    <th className="px-4 py-3.5 font-bold text-brand-text-muted">Student</th>
+                    <th className="px-4 py-3.5 font-bold text-brand-text-muted text-center">Present</th>
+                    <th className="px-4 py-3.5 font-bold text-brand-text-muted text-center">Late</th>
+                    <th className="px-4 py-3.5 font-bold text-brand-text-muted text-center">Absent</th>
+                    <th className="px-4 py-3.5 font-bold text-brand-text-muted text-center">Total</th>
+                    <th className="px-4 py-3.5 font-bold text-brand-text-muted text-center">Attendance</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-brand-border">
                   {filtered.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="px-4 py-8 text-center text-slate-400 text-xs">
-                        {search ? 'No students match your search.' : 'No records found for this filter.'}
+                      <td colSpan={6} className="px-4 py-8 text-center text-brand-text-muted text-xs">
+                        No students match your filter criteria.
                       </td>
                     </tr>
                   ) : filtered.map((s) => (
-                    <tr key={s.studentId} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="px-4 py-2.5">
+                    <tr key={s.studentId} className="hover:bg-brand-primary/5 transition-colors duration-150">
+                      <td className="px-4 py-3.5">
                         <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-[10px] font-bold shrink-0">
+                          <div className="w-6 h-6 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center text-[10px] font-bold shrink-0">
                             {s.fullName.charAt(0).toUpperCase()}
                           </div>
-                          <span className="font-medium text-slate-900">{s.fullName}</span>
+                          <span className="font-semibold text-brand-text">{s.fullName}</span>
                         </div>
                       </td>
-                      <td className="px-4 py-2.5 text-center">
-                        <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-bold">{s.present}</span>
+                      <td className="px-4 py-3.5 text-center">
+                        <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-brand-primary/10 text-brand-primary text-[11px] font-bold">{s.present}</span>
                       </td>
-                      <td className="px-4 py-2.5 text-center">
-                        <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-amber-50 text-amber-700 text-[11px] font-bold">{s.late}</span>
+                      <td className="px-4 py-3.5 text-center">
+                        <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-brand-gold/15 text-brand-gold text-[11px] font-bold">{s.late}</span>
                       </td>
-                      <td className="px-4 py-2.5 text-center">
-                        <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-rose-50 text-rose-700 text-[11px] font-bold">{s.absent}</span>
+                      <td className="px-4 py-3.5 text-center">
+                        <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-brand-accent/10 text-brand-accent text-[11px] font-bold">{s.absent}</span>
                       </td>
-                      <td className="px-4 py-2.5 text-center text-slate-600 font-medium">{s.total}</td>
-                      <td className="px-4 py-2.5 text-center"><PctBadge pct={s.attendancePercentage} /></td>
+                      <td className="px-4 py-3.5 text-center text-brand-text font-semibold">{s.total}</td>
+                      <td className="px-4 py-3.5 text-center"><PctBadge pct={s.attendancePercentage} /></td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
             {filtered.length > 0 && (
-              <div className="px-4 py-2 border-t border-slate-100 bg-slate-50/60">
-                <span className="text-[11px] text-slate-400">
+              <div className="px-4 py-3 border-t border-brand-border bg-brand-surface-tint">
+                <span className="text-[11px] text-brand-text-muted">
                   {filtered.length} student{filtered.length !== 1 ? 's' : ''} ·&nbsp;
-                  <span className="text-emerald-600 font-medium">≥85% = Good</span>&nbsp;·&nbsp;
-                  <span className="text-amber-600 font-medium">75–84% = Average</span>&nbsp;·&nbsp;
-                  <span className="text-rose-600 font-medium">&lt;75% = Low</span>
+                  <span className="text-brand-primary font-bold">≥85% = Good</span>&nbsp;·&nbsp;
+                  <span className="text-brand-gold font-bold">75–84% = Average</span>&nbsp;·&nbsp;
+                  <span className="text-brand-accent font-bold">&lt;75% = Low</span>
                 </span>
               </div>
             )}
@@ -327,7 +329,7 @@ export default function AttendanceManager({ allowedBatches = null }) {
   return (
     <div className="space-y-5">
       {/* ── View Toggle ─────────────────────────────────────────────────────── */}
-      <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-xl w-fit">
+      <div className="flex items-center gap-1 p-1 bg-brand-surface-tint border border-brand-border rounded-xl w-fit">
         {[
           { id: 'take',    label: '📋 Take Attendance' },
           { id: 'history', label: '📊 View History'    },
@@ -335,10 +337,10 @@ export default function AttendanceManager({ allowedBatches = null }) {
           <button
             key={tab.id}
             onClick={() => setActiveView(tab.id)}
-            className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 cursor-pointer ${
               activeView === tab.id
-                ? 'bg-white text-indigo-700 shadow-sm'
-                : 'text-slate-500 hover:text-slate-700'
+                ? 'bg-brand-surface text-brand-primary shadow-sm font-extrabold scale-[1.02]'
+                : 'text-brand-text-muted hover:text-brand-text'
             }`}
           >
             {tab.label}
@@ -357,8 +359,8 @@ export default function AttendanceManager({ allowedBatches = null }) {
           {/* Header */}
           <div className="flex items-start justify-between gap-3 flex-wrap">
             <div>
-              <h2 className="text-base font-semibold text-slate-900">Attendance Tracker</h2>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <h2 className="text-lg font-extrabold text-brand-text tracking-tight">Attendance Tracker</h2>
+              <p className="text-xs text-brand-text-muted mt-0.5">
                 Select a batch and date to record or review daily attendance.
               </p>
             </div>
@@ -372,24 +374,24 @@ export default function AttendanceManager({ allowedBatches = null }) {
           </div>
 
           {/* Control Panel */}
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="rounded-2xl border border-brand-border bg-brand-surface p-5 shadow-sm">
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <div>
-                <label htmlFor="attn-batch" className="block text-xs font-medium text-slate-700 mb-1">
+                <label htmlFor="attn-batch" className="block text-xs font-semibold text-brand-text mb-1.5">
                   Select Batch
                 </label>
                 <select
                   id="attn-batch"
                   value={selectedBatch}
                   onChange={(e) => setSelectedBatch(e.target.value)}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-xl border border-brand-border bg-brand-surface px-4 py-2.5 text-sm text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-primary transition-all"
                 >
                   {batches.map((b) => <option key={b} value={b}>{b}</option>)}
                 </select>
               </div>
 
               <div>
-                <label htmlFor="attn-date" className="block text-xs font-medium text-slate-700 mb-1">
+                <label htmlFor="attn-date" className="block text-xs font-semibold text-brand-text mb-1.5">
                   Select Date
                 </label>
                 <input
@@ -398,7 +400,7 @@ export default function AttendanceManager({ allowedBatches = null }) {
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
                   max={new Date().toISOString().split('T')[0]}
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-xl border border-brand-border bg-brand-surface px-4 py-2.5 text-sm text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-primary transition-all"
                 />
               </div>
 
@@ -407,14 +409,14 @@ export default function AttendanceManager({ allowedBatches = null }) {
                   <button
                     type="button"
                     onClick={() => handleMarkAll('Present')}
-                    className="flex-1 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700 hover:bg-emerald-100 transition-colors"
+                    className="flex-1 rounded-xl border border-brand-primary/20 bg-brand-primary/10 px-3 py-2.5 text-xs font-bold text-brand-primary hover:bg-brand-primary/20 transition-all cursor-pointer"
                   >
                     ✓ All Present
                   </button>
                   <button
                     type="button"
                     onClick={() => handleMarkAll('Absent')}
-                    className="flex-1 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-100 transition-colors"
+                    className="flex-1 rounded-xl border border-brand-accent/20 bg-brand-accent/10 px-3 py-2.5 text-xs font-bold text-brand-accent hover:bg-brand-accent/20 transition-all cursor-pointer"
                   >
                     ✗ All Absent
                   </button>
@@ -423,8 +425,8 @@ export default function AttendanceManager({ allowedBatches = null }) {
 
               {records.length > 0 && locked && (
                 <div className="flex items-end">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1.5 text-[11px] font-semibold text-emerald-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                  <span className="inline-flex items-center gap-1.5 rounded-xl bg-brand-primary/10 border border-brand-primary/20 px-4 py-2.5 text-xs font-bold text-brand-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
                     Attendance saved for this day
@@ -436,80 +438,80 @@ export default function AttendanceManager({ allowedBatches = null }) {
 
           {/* Main area */}
           {loading ? (
-            <div className="rounded-xl border border-slate-200 bg-white py-14 text-center">
+            <div className="rounded-2xl border border-brand-border bg-brand-surface py-14 text-center">
               <div className="inline-flex flex-col items-center gap-2">
-                <svg className="animate-spin h-6 w-6 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <svg className="animate-spin h-6 w-6 text-brand-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                 </svg>
-                <span className="text-sm text-slate-500">Loading students…</span>
+                <span className="text-xs text-brand-text-muted font-bold">Loading students…</span>
               </div>
             </div>
           ) : error ? (
-            <div className="rounded-xl border border-red-100 bg-red-50 p-6 text-center">
-              <p className="text-sm text-red-700 font-medium">{error}</p>
-              <button onClick={fetchAttendanceSheet} className="mt-2 text-xs text-red-600 hover:underline">Retry</button>
+            <div className="rounded-2xl border border-brand-accent/20 bg-brand-accent/5 p-6 text-center">
+              <p className="text-sm text-brand-accent font-semibold">{error}</p>
+              <button onClick={fetchAttendanceSheet} className="mt-2 text-xs text-brand-accent font-bold hover:underline">Retry</button>
             </div>
           ) : records.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-slate-200 bg-white p-12 text-center">
-              <p className="text-sm text-slate-500">No students registered in this batch yet.</p>
+            <div className="rounded-2xl border border-dashed border-brand-border bg-brand-surface p-12 text-center">
+              <p className="text-sm text-brand-text-muted">No students registered in this batch yet.</p>
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+              <div className="rounded-2xl border border-brand-border bg-brand-surface shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="min-w-full text-left text-xs">
                     <thead>
-                      <tr className="border-b border-slate-100 bg-slate-50">
-                        <th className="px-4 py-3 font-semibold text-slate-500 w-10 text-center">#</th>
-                        <th className="px-4 py-3 font-semibold text-slate-600">Student Name</th>
-                        <th className="px-4 py-3 font-semibold text-slate-600 text-center">
+                      <tr className="border-b border-brand-border bg-brand-surface-tint">
+                        <th className="px-4 py-3.5 font-bold text-brand-text-muted w-10 text-center">#</th>
+                        <th className="px-4 py-3.5 font-bold text-brand-text">Student Name</th>
+                        <th className="px-4 py-3.5 font-bold text-brand-text text-center">
                           Status
                           {locked && (
-                            <span className="ml-2 text-[9px] font-medium text-slate-400 normal-case tracking-normal">
+                            <span className="ml-2 text-[9px] font-bold text-brand-text-muted/65 normal-case tracking-normal">
                               (read-only — click Edit to change)
                             </span>
                           )}
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className="divide-y divide-brand-border">
                       {records.map((r, idx) => {
                         const statusColors = {
-                          Present: 'bg-emerald-50/60',
-                          Late:    'bg-amber-50/60',
-                          Absent:  'bg-rose-50/60',
+                          Present: 'bg-brand-primary/5',
+                          Late:    'bg-brand-gold/5',
+                          Absent:  'bg-brand-accent/5',
                         }
                         return (
                           <tr
                             key={r.studentId}
-                            className={`transition-colors ${locked ? statusColors[r.status] ?? '' : 'hover:bg-slate-50/50'}`}
+                            className={`transition-colors duration-150 ${locked ? statusColors[r.status] ?? '' : 'hover:bg-brand-primary/5'}`}
                           >
-                            <td className="px-4 py-3 text-center text-slate-400 font-medium">{idx + 1}</td>
-                            <td className="px-4 py-3">
+                            <td className="px-4 py-3.5 text-center text-brand-text-muted tabular-nums">{idx + 1}</td>
+                            <td className="px-4 py-3.5">
                               <div className="flex items-center gap-2">
-                                <div className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-[10px] font-bold shrink-0">
+                                <div className="w-6 h-6 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center text-[10px] font-bold shrink-0">
                                   {r.fullName?.charAt(0)?.toUpperCase() ?? '?'}
                                 </div>
-                                <span className="font-semibold text-slate-900">{r.fullName}</span>
+                                <span className="font-semibold text-brand-text">{r.fullName}</span>
                               </div>
                             </td>
-                            <td className="px-4 py-3">
+                            <td className="px-4 py-3.5">
                               <div className="flex justify-center items-center gap-3">
                                 {[
-                                  { value: 'Present', activeClass: 'bg-emerald-500 text-white border-emerald-500' },
-                                  { value: 'Late',    activeClass: 'bg-amber-500 text-white border-amber-500'   },
-                                  { value: 'Absent',  activeClass: 'bg-rose-500 text-white border-rose-500'     },
+                                  { value: 'Present', activeClass: 'bg-brand-primary text-brand-surface border-brand-primary' },
+                                  { value: 'Late',    activeClass: 'bg-brand-gold text-brand-surface border-brand-gold'   },
+                                  { value: 'Absent',  activeClass: 'bg-brand-accent text-brand-surface border-brand-accent'     },
                                 ].map((opt) => (
                                   <button
                                     key={opt.value}
                                     type="button"
                                     disabled={locked}
                                     onClick={() => !locked && handleStatusChange(r.studentId, opt.value)}
-                                    className={`rounded-full border px-3 py-1 text-[10px] font-semibold transition-all
+                                    className={`rounded-full border px-3 py-1.5 text-[10px] font-bold transition-all duration-200
                                       ${r.status === opt.value
                                         ? opt.activeClass
-                                        : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300'
+                                        : 'border-brand-border bg-brand-surface text-brand-text-muted hover:border-brand-border hover:bg-brand-surface-tint'
                                       }
                                       ${locked ? 'cursor-default' : 'cursor-pointer'}`}
                                   >
@@ -524,10 +526,10 @@ export default function AttendanceManager({ allowedBatches = null }) {
                     </tbody>
                   </table>
                 </div>
-                <div className="px-4 py-2 border-t border-slate-100 bg-slate-50/60 flex items-center justify-between">
-                  <span className="text-[11px] text-slate-400">{records.length} student{records.length !== 1 ? 's' : ''} in this batch</span>
+                <div className="px-4 py-3 border-t border-brand-border bg-brand-surface-tint flex items-center justify-between">
+                  <span className="text-[11px] text-brand-text-muted">{records.length} student{records.length !== 1 ? 's' : ''} in this batch</span>
                   {isSaved && (
-                    <span className="text-[11px] text-slate-400">
+                    <span className="text-[11px] text-brand-text-muted font-semibold">
                       {summary.Present} present · {summary.Late} late · {summary.Absent} absent
                     </span>
                   )}
@@ -538,8 +540,8 @@ export default function AttendanceManager({ allowedBatches = null }) {
               <div className="flex items-center justify-between gap-3 flex-wrap">
                 <div>
                   {saveSuccess && (
-                    <p className="text-xs text-emerald-600 font-medium flex items-center gap-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                    <p className="text-xs text-brand-primary font-bold flex items-center gap-1.5">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                       </svg>
                       {saveSuccess}
@@ -551,7 +553,7 @@ export default function AttendanceManager({ allowedBatches = null }) {
                     <button
                       onClick={handleSave}
                       disabled={saving}
-                      className="rounded-lg bg-indigo-600 px-5 py-2.5 text-xs font-semibold text-white hover:bg-indigo-500 disabled:opacity-60 transition-colors shadow-sm"
+                      className="rounded-xl bg-brand-accent hover:bg-brand-accent-hover px-5 py-3 text-xs font-bold text-brand-surface disabled:opacity-60 transition-all cursor-pointer shadow-sm"
                     >
                       {saving ? 'Saving…' : 'Save Attendance'}
                     </button>
@@ -560,7 +562,7 @@ export default function AttendanceManager({ allowedBatches = null }) {
                     <button
                       type="button"
                       onClick={() => setIsEditMode(true)}
-                      className="rounded-lg bg-amber-500 px-5 py-2.5 text-xs font-semibold text-white hover:bg-amber-400 transition-colors shadow-sm flex items-center gap-1.5"
+                      className="rounded-xl bg-brand-primary hover:bg-brand-primary/90 px-5 py-3 text-xs font-bold text-brand-surface transition-all cursor-pointer shadow-sm flex items-center gap-1.5"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
@@ -574,14 +576,14 @@ export default function AttendanceManager({ allowedBatches = null }) {
                         type="button"
                         onClick={() => { setIsEditMode(false); fetchAttendanceSheet() }}
                         disabled={saving}
-                        className="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60 transition-colors"
+                        className="rounded-xl border border-brand-border bg-brand-surface px-4 py-3 text-xs font-bold text-brand-text hover:bg-brand-surface-tint disabled:opacity-60 transition-all cursor-pointer"
                       >
                         Cancel
                       </button>
                       <button
                         onClick={handleUpdate}
                         disabled={saving}
-                        className="rounded-lg bg-emerald-600 px-5 py-2.5 text-xs font-semibold text-white hover:bg-emerald-500 disabled:opacity-60 transition-colors shadow-sm flex items-center gap-1.5"
+                        className="rounded-xl bg-brand-accent hover:bg-brand-accent-hover px-5 py-3 text-xs font-bold text-brand-surface disabled:opacity-60 transition-all cursor-pointer shadow-sm flex items-center gap-1.5"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />

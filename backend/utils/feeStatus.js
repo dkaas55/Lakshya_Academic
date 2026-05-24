@@ -10,8 +10,17 @@ const calculateDynamicAmountDue = (ledger, student) => {
   const monthlyFeeAmount = ledger.monthlyFeeAmount || ledger.totalFee || 0;
   const totalPaidAmount = ledger.amountPaid || 0;
 
-  const msDiff = new Date() - new Date(joiningDate);
-  const monthsElapsed = Math.floor(msDiff / (1000 * 60 * 60 * 24 * 30)) + 1;
+  const now = new Date();
+  const join = new Date(joiningDate);
+  let monthDiff = (now.getFullYear() - join.getFullYear()) * 12 + (now.getMonth() - join.getMonth());
+  
+  // If the current day of the month is less than the joining day, a full month hasn't passed yet
+  if (now.getDate() < join.getDate()) {
+    monthDiff--;
+  }
+  
+  monthDiff = Math.max(0, monthDiff);
+  const monthsElapsed = monthDiff + 1;
   
   const calculatedDue = (monthsElapsed * monthlyFeeAmount) - totalPaidAmount;
   return Math.max(0, calculatedDue);

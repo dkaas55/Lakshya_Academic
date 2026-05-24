@@ -6,10 +6,12 @@ export function tempPasswordFromPhone(phone) {
   return `Stu@${digits.slice(-6)}`
 }
 
-export function studentLoginEmail(phone) {
+export function generateUsername(phone, fullName = '') {
   const digits = String(phone).replace(/\D/g, '')
-  if (!digits) return ''
-  return `${digits}@student.institute.local`
+  const name = String(fullName).trim().split(' ')[0].toLowerCase().replace(/[^a-z0-9]/g, '')
+  let baseUsername = `${name}.${digits.slice(-4)}`
+  if (!name) baseUsername = `student.${digits.slice(-4)}`
+  return baseUsername
 }
 
 export function buildWhatsAppInvite({
@@ -19,7 +21,7 @@ export function buildWhatsAppInvite({
   totalCourseFee,
   password,
 }) {
-  const email = studentLoginEmail(phone)
+  const username = generateUsername(phone, fullName)
   const feeLabel =
     totalCourseFee === '' || totalCourseFee == null
       ? '—'
@@ -31,7 +33,7 @@ export function buildWhatsAppInvite({
     `Your ward *${fullName || '—'}* has been registered at *${INSTITUTE_NAME}*.`,
     ``,
     `*Login details*`,
-    `Email: ${email || '—'}`,
+    `Username: ${username || '—'}`,
     `Temporary password: ${password || '—'}`,
     ``,
     `*Enrollment*`,

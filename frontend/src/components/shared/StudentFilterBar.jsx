@@ -37,7 +37,7 @@ export default function StudentFilterBar({
       const matchQuery =
         !q ||
         (s.fullName  || '').toLowerCase().includes(q) ||
-        (s.email     || '').toLowerCase().includes(q)
+        (s.username  || '').toLowerCase().includes(q)
       return matchBatch && matchCls && matchQuery
     })
     onFilterChange?.(filtered)
@@ -51,22 +51,20 @@ export default function StudentFilterBar({
     setCls('all')
   }
 
-  // ── Accent-aware class helpers ─────────────────────────────────────────────
-  const ring   = accentColor === 'emerald' ? 'focus:ring-emerald-400 focus:border-emerald-400' : 'focus:ring-indigo-500 focus:border-indigo-400'
-  const clearBg = accentColor === 'emerald'
-    ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
-    : 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100'
+  // ── Design System style helpers ─────────────────────────────────────────────
+  const ring   = 'focus:ring-brand-primary focus:border-brand-primary'
+  const clearBg = 'bg-brand-accent/10 text-brand-accent border-brand-accent/20 hover:bg-brand-accent/20'
 
-  const selectBase = `w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 transition-colors ${ring}`
-  const inputBase  = `w-full rounded-lg border border-slate-300 bg-white pl-8 pr-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 transition-colors ${ring}`
+  const selectBase = `w-full rounded-xl border border-brand-border bg-brand-surface px-3 py-2 text-xs text-brand-text focus:outline-none focus:ring-2 transition-all duration-200 ${ring}`
+  const inputBase  = `w-full rounded-xl border border-brand-border bg-brand-surface pl-8 pr-3 py-2 text-xs text-brand-text placeholder:text-brand-text-muted/50 focus:outline-none focus:ring-2 transition-all duration-200 ${ring}`
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+    <div className="rounded-2xl border border-brand-border bg-brand-surface p-4 shadow-sm">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
 
         {/* ── Text search ─────────────────────────────────────────────────── */}
         <div className="relative flex-1 min-w-0">
-          <span className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none text-slate-400">
+          <span className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none text-brand-text-muted/60">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
             </svg>
@@ -76,7 +74,7 @@ export default function StudentFilterBar({
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by name or email…"
+            placeholder="Search by name or username…"
             className={inputBase}
           />
         </div>

@@ -3,7 +3,7 @@ import ActiveStudentsList from './ActiveStudentsList'
 import api from '../../lib/api'
 import {
   buildWhatsAppInvite,
-  studentLoginEmail,
+  generateUsername,
   tempPasswordFromPhone,
 } from '../../utils/studentCredentials'
 
@@ -71,9 +71,9 @@ export default function StudentRegistration() {
     [form.phoneNumber]
   )
 
-  const loginEmail = useMemo(
-    () => studentLoginEmail(form.phoneNumber),
-    [form.phoneNumber]
+  const loginUsername = useMemo(
+    () => generateUsername(form.phoneNumber, form.fullName),
+    [form.phoneNumber, form.fullName]
   )
 
   const whatsappMessage = useMemo(
@@ -155,10 +155,10 @@ export default function StudentRegistration() {
     <div className="space-y-5">
       <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 className="text-base font-semibold text-slate-900">
+          <h2 className="text-base font-semibold text-brand-text">
             Student Registration
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-brand-text-muted mt-0.5">
             Create a student account, fee ledger, and parent invite in one step.
           </p>
         </div>
@@ -167,13 +167,13 @@ export default function StudentRegistration() {
       {success && (
         <div
           role="status"
-          className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-xs text-emerald-800"
+          className="rounded-lg border border-emerald-200 bg-brand-primary/10 px-3 py-2.5 text-xs text-emerald-800"
         >
           <p className="font-medium">
             {success.student?.fullName} registered successfully.
           </p>
-          <p className="mt-1 text-emerald-700">
-            Login email: {success.student?.email} · Batch: {success.student?.batch}
+          <p className="mt-1 text-brand-primary">
+            Login username: {success.student?.username} · Batch: {success.student?.batch}
           </p>
         </div>
       )}
@@ -181,7 +181,7 @@ export default function StudentRegistration() {
       <div className="grid gap-5 lg:grid-cols-[1fr_280px]">
         <form
           onSubmit={handleSubmit}
-          className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm"
+          className="rounded-2xl border border-brand-border bg-brand-surface p-4 sm:p-5 shadow-sm"
         >
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Full Name" htmlFor="fullName" className="sm:col-span-2">
@@ -251,7 +251,7 @@ export default function StudentRegistration() {
               <datalist id="reg-subject-list">
                 {SUBJECT_OPTIONS.map((s) => <option key={s} value={s} />)}
               </datalist>
-              <p className="mt-1 text-[10px] text-slate-400">Comma-separate multiple subjects</p>
+              <p className="mt-1 text-[10px] text-brand-text-muted/75">Comma-separate multiple subjects</p>
             </Field>
 
             <Field label="Total Course Fee (₹)" htmlFor="totalCourseFee">
@@ -293,42 +293,42 @@ export default function StudentRegistration() {
             <button
               type="submit"
               disabled={loading || !tempPassword}
-              className="rounded-lg bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+              className="rounded-lg bg-brand-primary px-4 py-2 text-xs font-semibold text-brand-surface hover:bg-brand-primary/100 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary focus:ring-offset-2 disabled:bg-brand-surface-tint disabled:text-brand-text-muted/50 disabled:border disabled:border-brand-border/50 disabled:cursor-not-allowed transition-colors"
             >
               {loading ? 'Registering…' : 'Register student'}
             </button>
           </div>
         </form>
 
-        <aside className="rounded-xl border border-slate-200 bg-slate-50/80 p-4 space-y-4 h-fit">
+        <aside className="rounded-xl border border-brand-border bg-brand-surface-tint/80 p-4 space-y-4 h-fit">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-brand-text-muted">
               Parent utilities
             </p>
-            <h3 className="text-sm font-semibold text-slate-900 mt-1">
+            <h3 className="text-sm font-semibold text-brand-text mt-1">
               Credentials & invite
             </h3>
           </div>
 
           <div className="space-y-3 text-xs">
-            <CredentialRow label="Login email" value={loginEmail || '—'} mono />
+            <CredentialRow label="Login username" value={loginUsername || '—'} mono />
             <CredentialRow
               label="Temporary password"
               value={tempPassword || 'Enter phone to generate'}
               mono
               highlight
             />
-            <p className="text-[11px] text-slate-500 leading-relaxed">
+            <p className="text-[11px] text-brand-text-muted leading-relaxed">
               Password is derived from the last 6 digits of the phone number (
-              <span className="font-mono text-slate-600">Stu@######</span>).
+              <span className="font-mono text-brand-text">Stu@######</span>).
             </p>
           </div>
 
           <div>
-            <p className="text-[10px] font-medium text-slate-500 mb-1.5">
+            <p className="text-[10px] font-medium text-brand-text-muted mb-1.5">
               WhatsApp preview
             </p>
-            <pre className="text-[10px] leading-relaxed text-slate-700 bg-white border border-slate-200 rounded-lg p-2.5 max-h-36 overflow-y-auto whitespace-pre-wrap font-sans">
+            <pre className="text-[10px] leading-relaxed text-brand-text bg-brand-surface border border-brand-border rounded-lg p-2.5 max-h-36 overflow-y-auto whitespace-pre-wrap font-sans">
               {whatsappMessage}
             </pre>
           </div>
@@ -337,7 +337,7 @@ export default function StudentRegistration() {
             type="button"
             onClick={handleCopyInvite}
             disabled={!form.fullName.trim() || !tempPassword}
-            className="w-full rounded-lg border border-emerald-600 bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="w-full rounded-lg bg-brand-accent px-3 py-2 text-xs font-semibold text-white dark:text-brand-bg hover:bg-brand-accent-hover focus:outline-none focus:ring-2 focus:ring-brand-accent disabled:bg-brand-surface-tint disabled:text-brand-text-muted/50 disabled:border disabled:border-brand-border/50 disabled:cursor-not-allowed transition-colors shadow-sm"
           >
             {copiedInvite ? 'Copied to clipboard' : 'Copy WhatsApp Invite'}
           </button>
@@ -354,7 +354,7 @@ function Field({ label, htmlFor, children, className = '' }) {
     <div className={className}>
       <label
         htmlFor={htmlFor}
-        className="block text-xs font-medium text-slate-700 mb-1"
+        className="block text-xs font-medium text-brand-text mb-1"
       >
         {label}
       </label>
@@ -366,11 +366,11 @@ function Field({ label, htmlFor, children, className = '' }) {
 function CredentialRow({ label, value, mono, highlight }) {
   return (
     <div>
-      <p className="text-[10px] font-medium text-slate-500">{label}</p>
+      <p className="text-[10px] font-medium text-brand-text-muted">{label}</p>
       <p
-        className={`mt-0.5 text-slate-900 break-all ${
+        className={`mt-0.5 text-brand-text break-all ${
           mono ? 'font-mono text-[11px]' : ''
-        } ${highlight ? 'font-semibold text-indigo-700' : ''}`}
+        } ${highlight ? 'font-semibold text-brand-primary' : ''}`}
       >
         {value}
       </p>
@@ -379,4 +379,4 @@ function CredentialRow({ label, value, mono, highlight }) {
 }
 
 const inputClass =
-  'w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500'
+  'w-full rounded-lg border border-brand-border px-3 py-2 text-sm text-brand-text placeholder:text-brand-text-muted/75 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary focus:border-indigo-500'

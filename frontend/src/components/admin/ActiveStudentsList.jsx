@@ -6,7 +6,7 @@ import StudentFilterBar from '../shared/StudentFilterBar'
 
 function FeeStatusBadge({ status }) {
   const styles = {
-    PAID:    'bg-emerald-50 text-emerald-700 ring-emerald-200',
+    PAID:    'bg-brand-primary/10 text-brand-primary ring-emerald-200',
     PARTIAL: 'bg-sky-50 text-sky-700 ring-sky-200',
     PENDING: 'bg-amber-50 text-amber-800 ring-amber-200',
   }
@@ -19,7 +19,7 @@ function FeeStatusBadge({ status }) {
 
 function AccountStatusBadge({ status }) {
   const styles = {
-    active: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
+    active: 'bg-brand-primary/10 text-brand-primary ring-emerald-200',
     paused: 'bg-amber-50 text-amber-800 ring-amber-200',
   }
   return (
@@ -116,12 +116,12 @@ export default function ActiveStudentsList({ refreshKey = 0 }) {
 
   return (
     <>
-      <section className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      <section className="rounded-2xl border border-brand-border bg-brand-surface shadow-sm overflow-hidden">
         {/* Header */}
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between px-4 py-3 border-b border-slate-100 bg-slate-50/60">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between px-4 py-3 border-b border-brand-border bg-brand-surface-tint/60">
           <div>
-            <h3 className="text-sm font-semibold text-slate-900">Active Students List</h3>
-            <p className="text-[11px] text-slate-500 mt-0.5">
+            <h3 className="text-sm font-semibold text-brand-text">Active Students List</h3>
+            <p className="text-[11px] text-brand-text-muted mt-0.5">
               {students.length === 0
                 ? 'No students registered yet.'
                 : `Showing ${filteredStudents.length} of ${students.length} student${students.length === 1 ? '' : 's'}`}
@@ -131,7 +131,7 @@ export default function ActiveStudentsList({ refreshKey = 0 }) {
             type="button"
             onClick={loadStudents}
             disabled={loading}
-            className="self-start sm:self-auto rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50 transition-colors"
+            className="self-start sm:self-auto rounded-lg border border-brand-border bg-brand-surface px-2.5 py-1.5 text-[11px] font-medium text-brand-text hover:bg-brand-surface-tint disabled:opacity-50 transition-colors"
           >
             {loading ? 'Refreshing…' : 'Refresh'}
           </button>
@@ -155,42 +155,42 @@ export default function ActiveStudentsList({ refreshKey = 0 }) {
         )}
 
         {loading && students.length === 0 ? (
-          <div className="px-4 py-10 text-center text-xs text-slate-500">Loading students…</div>
+          <div className="px-4 py-10 text-center text-xs text-brand-text-muted">Loading students…</div>
         ) : students.length === 0 ? (
           <div className="px-4 py-10 text-center">
-            <p className="text-xs text-slate-500">Register a student above to see them listed here.</p>
+            <p className="text-xs text-brand-text-muted">Register a student above to see them listed here.</p>
           </div>
         ) : filteredStudents.length === 0 ? (
           <div className="px-4 py-10 text-center">
-            <p className="text-xs text-slate-500">No students match your filters.</p>
+            <p className="text-xs text-brand-text-muted">No students match your filters.</p>
           </div>
         ) : (
           <div className={`overflow-x-auto ${loading ? 'opacity-60' : ''}`}>
             <table className="min-w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-slate-100 bg-slate-50/80">
-                  <th className="px-4 py-2.5 font-semibold text-slate-600">Name</th>
-                  <th className="px-4 py-2.5 font-semibold text-slate-600">Phone</th>
-                  <th className="px-4 py-2.5 font-semibold text-slate-600">Batch</th>
-                  <th className="px-4 py-2.5 font-semibold text-slate-600">Class</th>
-                  <th className="px-4 py-2.5 font-semibold text-slate-600">Joined</th>
-                  <th className="px-4 py-2.5 font-semibold text-slate-600">Status</th>
-                  <th className="px-4 py-2.5 font-semibold text-slate-600">Fee</th>
-                  <th className="px-4 py-2.5 font-semibold text-slate-600 w-48">Actions</th>
+                <tr className="border-b border-brand-border bg-brand-surface-tint/80">
+                  <th className="px-4 py-2.5 font-semibold text-brand-text">Name</th>
+                  <th className="px-4 py-2.5 font-semibold text-brand-text">Phone</th>
+                  <th className="px-4 py-2.5 font-semibold text-brand-text">Batch</th>
+                  <th className="px-4 py-2.5 font-semibold text-brand-text">Class</th>
+                  <th className="px-4 py-2.5 font-semibold text-brand-text">Joined</th>
+                  <th className="px-4 py-2.5 font-semibold text-brand-text">Status</th>
+                  <th className="px-4 py-2.5 font-semibold text-brand-text">Fee</th>
+                  <th className="px-4 py-2.5 font-semibold text-brand-text w-48">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-brand-border">
                 {filteredStudents.map((student) => (
                   <tr
                     key={student.id}
-                    className={`hover:bg-slate-50/80 transition-colors cursor-pointer ${student.status === 'paused' ? 'opacity-70' : ''}`}
+                    className={`hover:bg-brand-surface-tint/80 transition-colors cursor-pointer ${student.status === 'paused' ? 'opacity-70' : ''}`}
                     onClick={() => setSelectedStudent(student)}
                   >
-                    <td className="px-4 py-2.5 font-medium text-slate-900">{student.fullName}</td>
-                    <td className="px-4 py-2.5 font-mono text-[11px] text-slate-700">{student.phoneNumber}</td>
-                    <td className="px-4 py-2.5 text-slate-700">{student.batch}</td>
-                    <td className="px-4 py-2.5 text-slate-700">{student.studentClass || '—'}</td>
-                    <td className="px-4 py-2.5 text-slate-500 whitespace-nowrap">{student.joiningDate ? new Date(student.joiningDate).toLocaleDateString('en-GB') : '—'}</td>
+                    <td className="px-4 py-2.5 font-medium text-brand-text">{student.fullName}</td>
+                    <td className="px-4 py-2.5 font-mono text-[11px] text-brand-text">{student.phoneNumber}</td>
+                    <td className="px-4 py-2.5 text-brand-text">{student.batch}</td>
+                    <td className="px-4 py-2.5 text-brand-text">{student.studentClass || '—'}</td>
+                    <td className="px-4 py-2.5 text-brand-text-muted whitespace-nowrap">{student.joiningDate ? new Date(student.joiningDate).toLocaleDateString('en-GB') : '—'}</td>
                     <td className="px-4 py-2.5"><AccountStatusBadge status={student.status ?? 'active'} /></td>
                     <td className="px-4 py-2.5"><FeeStatusBadge status={student.feeStatus} /></td>
                     <td className="px-4 py-2.5" onClick={(e) => e.stopPropagation()}>
@@ -198,14 +198,14 @@ export default function ActiveStudentsList({ refreshKey = 0 }) {
                         <button
                           type="button"
                           onClick={() => setEditStudent(student)}
-                          className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold text-slate-700 hover:bg-slate-100 transition-colors"
+                          className="rounded-lg border border-brand-border bg-brand-surface px-2 py-1 text-[10px] font-semibold text-brand-text hover:bg-brand-surface-tint transition-colors"
                         >
                           Edit
                         </button>
                         <button
                           type="button"
                           onClick={() => setSelectedStudent(student)}
-                          className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold text-slate-700 hover:bg-slate-100 transition-colors"
+                          className="rounded-lg border border-brand-border bg-brand-surface px-2 py-1 text-[10px] font-semibold text-brand-text hover:bg-brand-surface-tint transition-colors"
                         >
                           Ledger
                         </button>
@@ -215,7 +215,7 @@ export default function ActiveStudentsList({ refreshKey = 0 }) {
                             type="button"
                             disabled={statusLoading === student.id}
                             onClick={() => handleStatusChange(student, 'active')}
-                            className="rounded-lg border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-semibold text-emerald-700 hover:bg-emerald-100 disabled:opacity-50 transition-colors"
+                            className="rounded-lg border border-emerald-200 bg-brand-primary/10 px-2 py-1 text-[10px] font-semibold text-brand-primary hover:bg-emerald-100 disabled:opacity-50 transition-colors"
                           >
                             {statusLoading === student.id ? '…' : '▶ Resume'}
                           </button>

@@ -9,18 +9,18 @@ const VALID_ROLES = ["admin", "teacher", "student"];
 const formatUser = (user) => ({
   id: user._id,
   name: user.name,
-  email: user.email,
+  username: user.username,
   role: user.role,
 });
 
 const register = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, username, password, role } = req.body;
 
-    if (!name?.trim() || !email?.trim() || !password || !role) {
+    if (!name?.trim() || !username?.trim() || !password || !role) {
       return res.status(400).json({
         success: false,
-        message: "Name, email, password, and role are required",
+        message: "Name, username, password, and role are required",
       });
     }
 
@@ -38,12 +38,12 @@ const register = async (req, res) => {
       });
     }
 
-    const existingUser = await User.findOne({ email: email.trim().toLowerCase() });
+    const existingUser = await User.findOne({ username: username.trim().toLowerCase() });
 
     if (existingUser) {
       return res.status(409).json({
         success: false,
-        message: "An account with this email already exists",
+        message: "An account with this username already exists",
       });
     }
 
@@ -51,7 +51,7 @@ const register = async (req, res) => {
 
     const user = await User.create({
       name: name.trim(),
-      email: email.trim().toLowerCase(),
+      username: username.trim().toLowerCase(),
       passwordHash,
       role,
     });
@@ -68,7 +68,7 @@ const register = async (req, res) => {
     if (error.code === 11000) {
       return res.status(409).json({
         success: false,
-        message: "An account with this email already exists",
+        message: "An account with this username already exists",
       });
     }
 
@@ -83,12 +83,12 @@ const LOGIN_ROLES = ["admin", "teacher", "student"];
 
 const login = async (req, res) => {
   try {
-    const { email, password, role } = req.body;
+    const { username, password, role } = req.body;
 
-    if (!email?.trim() || !password || !role) {
+    if (!username?.trim() || !password || !role) {
       return res.status(400).json({
         success: false,
-        message: "Email, password, and role are required",
+        message: "Username, password, and role are required",
       });
     }
 
@@ -102,13 +102,13 @@ const login = async (req, res) => {
     }
 
     const user = await User.findOne({
-      email: email.trim().toLowerCase(),
+      username: username.trim().toLowerCase(),
     }).select("+passwordHash");
 
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: "Invalid email or password",
+        message: "Invalid username or password",
       });
     }
 
@@ -117,7 +117,7 @@ const login = async (req, res) => {
     if (!passwordMatches) {
       return res.status(401).json({
         success: false,
-        message: "Invalid email or password",
+        message: "Invalid username or password",
       });
     }
 
@@ -172,4 +172,50 @@ const getMe = async (req, res) => {
   });
 };
 
-module.exports = { register, login, getMe };
+const changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Current password and new password are required",
+      });
+    }
+
+    if (newPassword.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: "New password must be at least 8 characters",
+      });
+    }
+
+    const user = await User.findById(req.user._id).select("+passwordHash");
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    const passwordMatches = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!passwordMatches) {
+      return res.status(401).json({
+        success: false,
+        message: "Incorrect current password",
+      });
+    }
+
+    user.passwordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
+    await user.save();
+
+    res.json({
+      success: true,
+      message: "Password changed successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to change password",
+    });
+  }
+};
+
+module.exports = { register, login, getMe, changePassword };

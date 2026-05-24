@@ -6,9 +6,19 @@ const { calculateDynamicAmountDue, deriveFeeStatus } = require("../utils/feeStat
 
 const SALT_ROUNDS = 12;
 
-const buildStudentEmail = (phoneNumber) => {
+const buildStudentUsername = async (fullName, phoneNumber) => {
   const digits = String(phoneNumber).replace(/\D/g, "");
-  return `${digits}@student.institute.local`;
+  const name = String(fullName || "").trim().split(" ")[0].toLowerCase().replace(/[^a-z0-9]/g, "");
+  let baseUsername = `${name}.${digits.slice(-4)}`;
+  if (!name) baseUsername = `student.${digits.slice(-4)}`;
+  
+  let username = baseUsername;
+  let counter = 1;
+  while (await User.findOne({ username })) {
+    username = `${baseUsername}${counter}`;
+    counter++;
+  }
+  return username;
 };
 
 const registerStudent = async (req, res) => {
@@ -51,27 +61,11 @@ const registerStudent = async (req, res) => {
     });
   }
 
-  const email = buildStudentEmail(phoneNumber);
+  const username = await buildStudentUsername(fullName, phoneNumber);
   const normalizedPhone = digits;
 
-  const existingProfile = await StudentProfile.findOne({
-    parentContact: normalizedPhone,
-  });
+  // Removed existingProfile check to allow siblings with same phone number
 
-  if (existingProfile) {
-    return res.status(409).json({
-      success: false,
-      message: "A student with this phone number is already registered",
-    });
-  }
-
-  const existingUser = await User.findOne({ email });
-  if (existingUser) {
-    return res.status(409).json({
-      success: false,
-      message: "A student account for this phone number already exists",
-    });
-  }
 
   let user;
   let profile;
@@ -81,7 +75,7 @@ const registerStudent = async (req, res) => {
 
     user = await User.create({
       name: fullName.trim(),
-      email,
+      username,
       passwordHash,
       role: "student",
     });
@@ -115,7 +109,7 @@ const registerStudent = async (req, res) => {
           id: profile._id,
           userId: user._id,
           fullName: user.name,
-          email: user.email,
+          username: user.username,
           phoneNumber: profile.parentContact,
           batch: profile.batch,
           studentClass: profile.studentClass,
@@ -142,7 +136,7 @@ const registerStudent = async (req, res) => {
     if (error.code === 11000) {
       return res.status(409).json({
         success: false,
-        message: "A student with this phone number is already registered",
+        message: "A duplicate record was found in the database (likely username). Please try again.",
       });
     }
 
@@ -164,7 +158,7 @@ const getStudents = async (req, res) => {
   try {
     // Exclude 'removed' students from the active roster
     const profiles = await StudentProfile.find({ status: { $ne: "removed" } })
-      .populate("user", "name email")
+      .populate("user", "name username")
       .sort({ createdAt: -1 })
       .lean();
 
@@ -184,6 +178,7 @@ const getStudents = async (req, res) => {
       return {
         id: profile._id,
         fullName: profile.user?.name ?? "Unknown",
+        username: profile.user?.username ?? "",
         phoneNumber: profile.parentContact,
         batch: profile.batch,
         studentClass: profile.studentClass,

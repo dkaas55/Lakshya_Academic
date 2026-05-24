@@ -9,7 +9,7 @@ const { processMonthlyFees } = require("./utils/feeCron");
 const SALT_ROUNDS = 12;
 const SEED_ADMIN = {
   name: "Admin User",
-  email: "admin@institute.com",
+  username: "admin",
   password: "password123",
   role: "admin",
 };
@@ -63,7 +63,7 @@ const connectDatabase = async () => {
 };
 
 const seedAdminUser = async () => {
-  const existing = await User.findOne({ email: SEED_ADMIN.email });
+  const existing = await User.findOne({ username: SEED_ADMIN.username });
 
   if (existing) {
     return;
@@ -73,13 +73,13 @@ const seedAdminUser = async () => {
 
   await User.create({
     name: SEED_ADMIN.name,
-    email: SEED_ADMIN.email,
+    username: SEED_ADMIN.username,
     passwordHash,
     role: SEED_ADMIN.role,
   });
 
   console.log(
-    `Seeded master admin account (${SEED_ADMIN.email}). Change the password after first login.`
+    `Seeded master admin account (${SEED_ADMIN.username}). Change the password after first login.`
   );
 };
 

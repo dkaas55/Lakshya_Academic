@@ -16,7 +16,7 @@ const getLedger = async (req, res) => {
 
   try {
     const profile = await StudentProfile.findById(studentId)
-      .populate("user", "name email")
+      .populate("user", "name username")
       .lean();
 
     if (!profile) {
@@ -50,6 +50,7 @@ const getLedger = async (req, res) => {
         ledger: {
           id: ledger._id,
           totalCourseFee: ledger.totalFee,
+          monthlyFeeAmount: ledger.monthlyFeeAmount || ledger.totalFee,
           amountPaid: ledger.amountPaid,
           amountDue: dynamicAmountDue,
           feeStatus,
@@ -153,6 +154,7 @@ const collectInstallment = async (req, res) => {
         },
         ledger: {
           totalCourseFee: ledger.totalFee,
+          monthlyFeeAmount: ledger.monthlyFeeAmount || ledger.totalFee,
           amountPaid: ledger.amountPaid,
           amountDue: newDynamicAmountDue,
           feeStatus,

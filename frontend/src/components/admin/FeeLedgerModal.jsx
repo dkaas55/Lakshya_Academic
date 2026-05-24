@@ -27,7 +27,7 @@ function formatDate(iso) {
 
 function FeeStatusPill({ status }) {
   const styles = {
-    PAID:    'bg-emerald-50 text-emerald-700 ring-emerald-200',
+    PAID:    'bg-brand-primary/10 text-brand-primary ring-emerald-200',
     PARTIAL: 'bg-sky-50 text-sky-700 ring-sky-200',
     PENDING: 'bg-amber-50 text-amber-800 ring-amber-200',
   }
@@ -65,14 +65,14 @@ function ReceiptSuccessBanner({ receiptInfo, student, onDismiss }) {
       {/* Top row */}
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
+          <div className="w-8 h-8 rounded-full bg-brand-primary/100 flex items-center justify-center shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
             </svg>
           </div>
           <div>
             <p className="text-xs font-semibold text-emerald-900">Payment recorded successfully!</p>
-            <p className="text-[11px] text-emerald-700 mt-0.5">
+            <p className="text-[11px] text-brand-primary mt-0.5">
               {formatCurrency(receiptInfo.amount)} via {receiptInfo.paymentMode}
               {receiptInfo.amountDue > 0
                 ? ` · ${formatCurrency(receiptInfo.amountDue)} remaining`
@@ -86,7 +86,7 @@ function ReceiptSuccessBanner({ receiptInfo, student, onDismiss }) {
             e.stopPropagation()
             onDismiss()
           }}
-          className="text-emerald-400 hover:text-emerald-600 transition-colors shrink-0"
+          className="text-emerald-400 hover:text-brand-primary transition-colors shrink-0"
           aria-label="Dismiss"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -102,8 +102,8 @@ function ReceiptSuccessBanner({ receiptInfo, student, onDismiss }) {
         disabled={downloading}
         className={`w-full flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-xs font-semibold transition-all shadow-sm
           ${downloaded
-            ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-            : 'bg-white border border-emerald-300 text-emerald-800 hover:bg-emerald-100'
+            ? 'bg-emerald-600 text-white dark:bg-emerald-500/20 dark:text-emerald-300 dark:border dark:border-emerald-500/30 hover:bg-emerald-700'
+            : 'bg-brand-surface border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-brand-surface-tint'
           }
           ${downloading ? 'opacity-70 cursor-wait' : ''}`}
       >
@@ -138,7 +138,7 @@ function ReceiptSuccessBanner({ receiptInfo, student, onDismiss }) {
         </p>
       )}
 
-      <p className="text-[10px] text-emerald-600/70 text-center">
+      <p className="text-[10px] text-brand-primary/70 text-center">
         Receipt #{receiptInfo.receiptNumber}
       </p>
     </div>
@@ -235,6 +235,7 @@ export default function FeeLedgerModal({ student, onClose, onPaymentCollected })
         amount:         paymentAmount,
         amountDue:      data.data.ledger.amountDue,
         totalCourseFee: data.data.ledger.totalCourseFee,
+        monthlyFeeAmount: data.data.ledger.monthlyFeeAmount,
         paymentMode,
         paidAt:         now,
         receiptNumber:  rNum,
@@ -262,22 +263,22 @@ export default function FeeLedgerModal({ student, onClose, onPaymentCollected })
     >
       {/* Backdrop */}
       <div
-        className="absolute inset-0 -z-10 bg-slate-900/50 backdrop-blur-[2px] transition-opacity"
+        className="absolute inset-0 -z-10 bg-brand-text/30 backdrop-blur-[2px] transition-opacity"
         aria-hidden="true"
       />
 
       <div
-        className="relative z-10 w-full max-w-lg max-h-[92vh] sm:max-h-[88vh] overflow-hidden flex flex-col rounded-t-2xl sm:rounded-2xl border border-slate-200 bg-white shadow-xl"
+        className="relative z-10 w-full max-w-lg max-h-[92vh] sm:max-h-[88vh] overflow-hidden flex flex-col rounded-t-2xl sm:rounded-2xl border border-brand-border bg-brand-surface shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* ── Modal Header ─────────────────────────────────────────────── */}
-        <div className="flex items-start justify-between gap-3 px-4 sm:px-5 py-4 border-b border-slate-100 bg-slate-50/80 shrink-0">
+        <div className="flex items-start justify-between gap-3 px-4 sm:px-5 py-4 border-b border-brand-border bg-brand-surface-tint/80 shrink-0">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Fee Ledger</p>
-            <h2 id="fee-ledger-title" className="text-base font-semibold text-slate-900 mt-0.5">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-brand-text-muted">Fee Ledger</p>
+            <h2 id="fee-ledger-title" className="text-base font-semibold text-brand-text mt-0.5">
               {student.fullName}
             </h2>
-            <p className="text-[11px] text-slate-500 mt-0.5">
+            <p className="text-[11px] text-brand-text-muted mt-0.5">
               {student.batch}
               {student.studentClass && ` · Class ${student.studentClass}`}
               {student.phoneNumber && ` · ${student.phoneNumber}`}
@@ -286,7 +287,7 @@ export default function FeeLedgerModal({ student, onClose, onPaymentCollected })
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-200/60 hover:text-slate-600 transition-colors cursor-pointer relative z-50"
+            className="rounded-lg p-1.5 text-brand-text-muted/75 hover:bg-brand-surface-tint hover:text-brand-text transition-colors cursor-pointer relative z-50"
             aria-label="Close"
           >
             ✕
@@ -302,7 +303,7 @@ export default function FeeLedgerModal({ student, onClose, onPaymentCollected })
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
               </svg>
-              <p className="text-xs text-slate-500">Loading fee ledger…</p>
+              <p className="text-xs text-brand-text-muted">Loading fee ledger…</p>
             </div>
           ) : error ? (
             <p role="alert" className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
@@ -321,17 +322,17 @@ export default function FeeLedgerModal({ student, onClose, onPaymentCollected })
 
               {/* ── Fee status + summary cards ──────────────────────────── */}
               <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-500">Fee Status</span>
+                <span className="text-xs text-brand-text-muted">Fee Status</span>
                 <FeeStatusPill status={ledgerData.feeStatus} />
               </div>
 
               <div className="grid grid-cols-3 gap-2">
-                <div className="rounded-xl border border-slate-100 bg-slate-50/80 px-3 py-2.5">
-                  <p className="text-[10px] font-medium text-slate-500 uppercase tracking-wide">Total Fee</p>
-                  <p className="text-sm font-semibold text-slate-900 mt-1">{formatCurrency(ledgerData.totalCourseFee)}</p>
+                <div className="rounded-xl border border-brand-border bg-brand-surface-tint/80 px-3 py-2.5">
+                  <p className="text-[10px] font-medium text-brand-text-muted uppercase tracking-wide">Total Fee</p>
+                  <p className="text-sm font-semibold text-brand-text mt-1">{formatCurrency(ledgerData.totalCourseFee)}</p>
                 </div>
-                <div className="rounded-xl border border-emerald-100 bg-emerald-50/50 px-3 py-2.5">
-                  <p className="text-[10px] font-medium text-emerald-700/80 uppercase tracking-wide">Paid</p>
+                <div className="rounded-xl border border-emerald-100 bg-brand-primary/10/50 px-3 py-2.5">
+                  <p className="text-[10px] font-medium text-brand-primary/80 uppercase tracking-wide">Paid</p>
                   <p className="text-sm font-semibold text-emerald-800 mt-1">{formatCurrency(ledgerData.amountPaid)}</p>
                 </div>
                 <div className="rounded-xl border border-amber-100 bg-amber-50/50 px-3 py-2.5">
@@ -340,28 +341,11 @@ export default function FeeLedgerModal({ student, onClose, onPaymentCollected })
                 </div>
               </div>
 
-              {/* ── Fee progress bar ────────────────────────────────────── */}
-              {ledgerData.totalCourseFee > 0 && (
-                <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-[10px] text-slate-400">Payment progress</span>
-                    <span className="text-[10px] font-semibold text-slate-600">
-                      {Math.round((ledgerData.amountPaid / ledgerData.totalCourseFee) * 100)}%
-                    </span>
-                  </div>
-                  <div className="h-1.5 w-full rounded-full bg-slate-100 overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-emerald-500 transition-all duration-500"
-                      style={{ width: `${Math.min(100, Math.round((ledgerData.amountPaid / ledgerData.totalCourseFee) * 100))}%` }}
-                    />
-                  </div>
-                </div>
-              )}
 
               {/* ── Collect Installment Form ────────────────────────────── */}
               {amountDue > 0 && (
-                <form onSubmit={handleCollect} className="rounded-xl border border-slate-200 bg-white p-3 space-y-3">
-                  <h3 className="text-xs font-semibold text-slate-900">Collect Installment</h3>
+                <form onSubmit={handleCollect} className="rounded-2xl border border-brand-border bg-brand-surface p-3 space-y-3">
+                  <h3 className="text-xs font-semibold text-brand-text">Collect Installment</h3>
 
                   {collectError && (
                     <p role="alert" className="text-[11px] text-red-600 bg-red-50 border border-red-100 rounded-lg px-2.5 py-1.5">
@@ -371,7 +355,7 @@ export default function FeeLedgerModal({ student, onClose, onPaymentCollected })
 
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label htmlFor="installment-amount" className="block text-[10px] font-medium text-slate-600 mb-1">
+                      <label htmlFor="installment-amount" className="block text-[10px] font-medium text-brand-text mb-1">
                         Amount (₹)
                       </label>
                       <input
@@ -387,19 +371,19 @@ export default function FeeLedgerModal({ student, onClose, onPaymentCollected })
                           setLastReceipt(null)
                         }}
                         placeholder={`Max ${amountDue}`}
-                        className="w-full rounded-lg border border-slate-200 px-2.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                        className="w-full rounded-lg border border-brand-border px-2.5 py-2 text-xs text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
                         disabled={collecting}
                       />
                     </div>
                     <div>
-                      <label htmlFor="payment-mode" className="block text-[10px] font-medium text-slate-600 mb-1">
+                      <label htmlFor="payment-mode" className="block text-[10px] font-medium text-brand-text mb-1">
                         Payment Mode
                       </label>
                       <select
                         id="payment-mode"
                         value={paymentMode}
                         onChange={(e) => setPaymentMode(e.target.value)}
-                        className="w-full rounded-lg border border-slate-200 px-2.5 py-2 text-xs text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                        className="w-full rounded-lg border border-brand-border px-2.5 py-2 text-xs text-brand-text bg-brand-surface focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
                         disabled={collecting}
                       >
                         {PAYMENT_MODES.map((mode) => (
@@ -412,7 +396,7 @@ export default function FeeLedgerModal({ student, onClose, onPaymentCollected })
                   <button
                     type="submit"
                     disabled={collecting || !amount}
-                    className="w-full rounded-lg bg-slate-900 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-800 disabled:opacity-50 transition-colors flex items-center justify-center gap-1.5"
+                    className="w-full rounded-lg bg-brand-accent px-3 py-2 text-xs font-semibold text-white dark:text-brand-bg hover:bg-brand-accent-hover disabled:opacity-50 transition-colors flex items-center justify-center gap-1.5 shadow-sm"
                   >
                     {collecting ? (
                       <>
@@ -436,32 +420,32 @@ export default function FeeLedgerModal({ student, onClose, onPaymentCollected })
 
               {/* ── Payment History ─────────────────────────────────────── */}
               <div>
-                <h3 className="text-xs font-semibold text-slate-900 mb-2">
+                <h3 className="text-xs font-semibold text-brand-text mb-2">
                   Payment History
-                  <span className="ml-1.5 text-[10px] font-normal text-slate-400">
+                  <span className="ml-1.5 text-[10px] font-normal text-brand-text-muted/75">
                     ({ledgerData.paymentHistory?.length ?? 0} transactions)
                   </span>
                 </h3>
                 {!ledgerData.paymentHistory?.length ? (
-                  <p className="text-[11px] text-slate-500 py-4 text-center border border-dashed border-slate-200 rounded-lg">
+                  <p className="text-[11px] text-brand-text-muted py-4 text-center border border-dashed border-brand-border rounded-lg">
                     No payments recorded yet.
                   </p>
                 ) : (
-                  <div className="overflow-x-auto rounded-lg border border-slate-100">
+                  <div className="overflow-x-auto rounded-lg border border-brand-border">
                     <table className="min-w-full text-left text-[11px]">
                       <thead>
-                        <tr className="bg-slate-50 border-b border-slate-100">
-                          <th className="px-3 py-2 font-semibold text-slate-600">Date</th>
-                          <th className="px-3 py-2 font-semibold text-slate-600">Amount</th>
-                          <th className="px-3 py-2 font-semibold text-slate-600">Mode</th>
+                        <tr className="bg-brand-surface-tint border-b border-brand-border">
+                          <th className="px-3 py-2 font-semibold text-brand-text">Date</th>
+                          <th className="px-3 py-2 font-semibold text-brand-text">Amount</th>
+                          <th className="px-3 py-2 font-semibold text-brand-text">Mode</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100">
+                      <tbody className="divide-y divide-brand-border">
                         {ledgerData.paymentHistory.map((entry) => (
-                          <tr key={entry._id} className="hover:bg-slate-50/60 transition-colors">
-                            <td className="px-3 py-2 text-slate-600 whitespace-nowrap">{formatDate(entry.paidAt)}</td>
-                            <td className="px-3 py-2 font-semibold text-emerald-700">{formatCurrency(entry.amount)}</td>
-                            <td className="px-3 py-2 text-slate-700">{entry.method || '—'}</td>
+                          <tr key={entry._id} className="hover:bg-brand-surface-tint/60 transition-colors">
+                            <td className="px-3 py-2 text-brand-text whitespace-nowrap">{formatDate(entry.paidAt)}</td>
+                            <td className="px-3 py-2 font-semibold text-brand-primary">{formatCurrency(entry.amount)}</td>
+                            <td className="px-3 py-2 text-brand-text">{entry.method || '—'}</td>
                           </tr>
                         ))}
                       </tbody>

@@ -15,7 +15,7 @@ function formatTeacher(user) {
   return {
     id: user._id,
     name: user.name,
-    email: user.email,
+    username: user.username,
     assignedBatches: user.assignedBatches ?? [],
     joiningDate: user.joiningDate,
     compensationType: user.compensationType,
@@ -56,7 +56,7 @@ const createTeacher = async (req, res) => {
 
   const {
     name,
-    email,
+    username,
     password,
     assignedBatches = [],
     joiningDate,
@@ -66,10 +66,10 @@ const createTeacher = async (req, res) => {
   } = req.body;
 
   // ── Validation ──────────────────────────────────────────────────────────────
-  if (!name?.trim() || !email?.trim() || !password) {
+  if (!name?.trim() || !username?.trim() || !password) {
     return res.status(400).json({
       success: false,
-      message: "Name, email, and password are required",
+      message: "Name, username, and password are required",
     });
   }
 
@@ -98,11 +98,11 @@ const createTeacher = async (req, res) => {
   }
 
   try {
-    const existing = await User.findOne({ email: email.trim().toLowerCase() });
+    const existing = await User.findOne({ username: username.trim().toLowerCase() });
     if (existing) {
       return res.status(409).json({
         success: false,
-        message: "An account with this email already exists",
+        message: "An account with this username already exists",
       });
     }
 
@@ -110,7 +110,7 @@ const createTeacher = async (req, res) => {
 
     const teacher = await User.create({
       name: name.trim(),
-      email: email.trim().toLowerCase(),
+      username: username.trim().toLowerCase(),
       passwordHash,
       role: "teacher",
       assignedBatches: assignedBatches ?? [],
@@ -133,7 +133,7 @@ const createTeacher = async (req, res) => {
     if (error.code === 11000) {
       return res.status(409).json({
         success: false,
-        message: "An account with this email already exists",
+        message: "An account with this username already exists",
       });
     }
     console.error("createTeacher error:", error);

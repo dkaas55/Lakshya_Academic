@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../lib/api'
 import { clearToken, clearRole } from '../lib/auth'
+import SettingsModal from '../components/shared/SettingsModal'
+import { useTheme } from '../context/ThemeContext'
+
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -26,7 +29,7 @@ function formatDate(iso) {
 
 const FEE_STATUS_CONFIG = {
   PAID: {
-    pill: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
+    pill: 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-400 ring-emerald-100 dark:ring-emerald-900/50',
     bar: 'bg-emerald-500',
     label: 'Fully Paid',
     icon: (
@@ -37,7 +40,7 @@ const FEE_STATUS_CONFIG = {
     ),
   },
   PARTIAL: {
-    pill: 'bg-sky-50 text-sky-700 ring-sky-200',
+    pill: 'bg-sky-50 dark:bg-sky-950/30 text-sky-800 dark:text-sky-400 ring-sky-100 dark:ring-sky-900/50',
     bar: 'bg-sky-400',
     label: 'Partially Paid',
     icon: (
@@ -48,7 +51,7 @@ const FEE_STATUS_CONFIG = {
     ),
   },
   PENDING: {
-    pill: 'bg-amber-50 text-amber-700 ring-amber-200',
+    pill: 'bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-400 ring-amber-100 dark:ring-amber-900/50',
     bar: 'bg-amber-400',
     label: 'Payment Pending',
     icon: (
@@ -63,9 +66,9 @@ const FEE_STATUS_CONFIG = {
 // ─── Material type badge config ───────────────────────────────────────────────
 
 const MATERIAL_TYPE_CONFIG = {
-  Notes: { badge: 'bg-emerald-50 text-emerald-700 ring-emerald-200' },
-  Assignment: { badge: 'bg-amber-50 text-amber-700 ring-amber-200' },
-  'Lecture Link': { badge: 'bg-sky-50 text-sky-700 ring-sky-200' },
+  Notes: { badge: 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-400 ring-emerald-100 dark:ring-emerald-900/50' },
+  Assignment: { badge: 'bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-400 ring-amber-100 dark:ring-amber-900/50' },
+  'Lecture Link': { badge: 'bg-sky-50 dark:bg-sky-950/30 text-sky-800 dark:text-sky-400 ring-sky-100 dark:ring-sky-900/50' },
 }
 
 // ─── Nav tabs for the student portal ─────────────────────────────────────────
@@ -87,6 +90,8 @@ export default function StudentDashboard() {
   const [attnData, setAttnData]     = useState(null)
   const [loading, setLoading]       = useState(true)
   const [error, setError]           = useState('')
+  const [showSettings, setShowSettings] = useState(false)
+  const { theme, setTheme } = useTheme()
 
   useEffect(() => {
     let cancelled = false
@@ -139,69 +144,134 @@ export default function StudentDashboard() {
   const tests     = dashData?.tests ?? []
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* ── Top nav ─────────────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-10 border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3 sm:px-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 text-xs font-bold text-white select-none">
-              {student?.fullName?.[0]?.toUpperCase() ?? '?'}
+    <div className="min-h-screen bg-brand-bg text-brand-text flex relative pb-28 lg:pb-0 transition-colors duration-300">
+      {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
+      
+      {/* ── Desktop Sidebar (hidden on mobile) ─────────────────────────────── */}
+      <aside className="hidden lg:flex inset-y-0 left-0 z-30 w-60 flex-col border-r border-brand-border bg-brand-primary text-brand-surface transition-transform duration-300">
+        <div className="px-6 py-6 border-b border-brand-border/20 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white shadow-sm overflow-hidden shrink-0">
+            <img src="/logo.png" alt="Logo" className="h-full w-full object-contain p-1" />
+          </div>
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-brand-gold leading-tight">
+              Lakshya Academy
+            </p>
+            <h1 className="text-xs font-semibold text-brand-surface/90 mt-0.5">Student Portal</h1>
+          </div>
+        </div>
+
+        <nav className="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto">
+          {TABS.map((item) => {
+            const isActive = activeTab === item.id
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => setActiveTab(item.id)}
+                className={`w-full flex items-center gap-3 rounded-xl px-4 py-3 text-left text-xs font-semibold transition-all duration-200 ${
+                  isActive
+                    ? 'bg-brand-surface text-brand-primary shadow-sm font-extrabold scale-[1.02]'
+                    : 'text-brand-surface/80 hover:bg-brand-surface/10 hover:text-brand-surface'
+                }`}
+              >
+                <span className="text-[14px]" aria-hidden>
+                  {item.icon}
+                </span>
+                {item.label}
+              </button>
+            )
+          })}
+        </nav>
+
+        <div className="px-3 py-4 border-t border-brand-border/20 space-y-1.5">
+          <button
+            type="button"
+            onClick={() => setShowSettings(true)}
+            className="w-full rounded-xl px-4 py-3 text-xs font-semibold text-brand-surface/80 hover:bg-brand-surface/10 hover:text-brand-surface transition-all duration-200 text-left flex items-center gap-3"
+          >
+            <span className="text-[14px]">⚙️</span>
+            Settings
+          </button>
+        </div>
+      </aside>
+
+      {/* ── Main Content Area ──────────────────────────────────────────────── */}
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+        {/* Top Header (visible on all screens) */}
+        <header className="sticky top-0 z-10 bg-brand-surface border-b border-brand-border px-6 py-4 flex items-center justify-between gap-4 transition-colors duration-300">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="lg:hidden flex h-9 w-9 items-center justify-center rounded-xl bg-white shadow-sm overflow-hidden">
+              <img src="/logo.png" alt="Logo" className="h-full w-full object-contain p-0.5" />
             </div>
+            <div className="min-w-0">
+              <h2 className="text-sm font-semibold text-brand-text truncate">
+                Student Workspace
+              </h2>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 text-xs font-semibold text-brand-text-muted">
+             {student?.batch && (
+              <span className="hidden sm:inline-flex items-center rounded-full bg-brand-primary/10 px-3 py-1 text-[10px] font-bold text-brand-primary border border-brand-primary/20">
+                {student.batch}
+              </span>
+            )}
+            
+            <button
+              type="button"
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="p-2 rounded-xl bg-brand-surface-tint hover:bg-brand-surface border border-brand-border text-brand-text-muted hover:text-brand-text transition-colors cursor-pointer text-xs font-semibold"
+              title="Toggle Theme"
+            >
+              {theme === 'dark' ? '☀️ Light' : '🌙 Dark'}
+            </button>
+
+            <span className="hidden sm:inline-flex rounded-full bg-brand-primary/10 text-brand-primary border border-brand-primary/20 px-2.5 py-1 text-[10px] uppercase font-bold tracking-wide">
+              Live
+            </span>
+            <button
+              type="button"
+              onClick={() => setShowSettings(true)}
+              className="lg:hidden rounded-xl bg-brand-surface-tint border border-brand-border px-3 py-1.5 text-xs font-bold text-brand-text hover:bg-brand-surface transition-colors"
+            >
+              ⚙️
+            </button>
+          </div>
+        </header>
+
+        <main className="flex-1 overflow-auto p-6 sm:p-8">
+          {/* Top-Left Logo Card in Dashboard body canvas */}
+          <div className="bg-brand-surface border border-brand-border rounded-2xl p-4 flex items-center gap-4 mb-8 shadow-sm max-w-sm transition-all duration-300 hover:scale-[1.01]">
+            <img src="/logo.png" alt="Lakshya Logo" className="h-10 w-auto object-contain" />
             <div>
-              <p className="text-[10px] font-medium uppercase tracking-wider text-slate-500">Student Portal</p>
-              <p className="text-sm font-semibold text-slate-900 leading-none mt-0.5">
-                {loading ? 'Loading…' : (student?.fullName ?? 'My Dashboard')}
+              <h1 className="text-base font-extrabold text-brand-primary leading-tight">
+                Lakshya Academic Institute
+              </h1>
+              <p className="text-[9px] text-brand-text-muted uppercase tracking-widest font-bold mt-0.5">
+                Student Portal
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            {student?.batch && (
-              <span className="hidden sm:inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 text-[10px] font-semibold text-indigo-700 ring-1 ring-indigo-200">
-                {student.batch}
-              </span>
+          <div className="mx-auto max-w-5xl flex flex-col gap-6">
+            {/* Header Section inside main area for desktop feel */}
+            {!loading && student && (
+              <div className="hidden lg:flex flex-col gap-1 mb-2 animate-fadeIn">
+                <h1 className="text-2xl font-bold text-brand-primary tracking-tight">Student Dashboard</h1>
+                <p className="text-xs text-brand-text-muted">
+                  Welcome back, {student.fullName}! Here is an overview of your academic progress, learning materials, and fee status.
+                </p>
+              </div>
             )}
-            <button
-              type="button"
-              onClick={handleSignOut}
-              className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 transition-colors"
-            >
-              Sign out
-            </button>
-          </div>
-        </div>
 
-        {/* Tab bar */}
-        <div className="mx-auto max-w-4xl px-4 sm:px-6">
-          <nav className="flex gap-1 -mb-px overflow-x-auto">
-            {TABS.map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setActiveTab(tab.id)}
-                className={`shrink-0 flex items-center gap-1.5 border-b-2 px-4 py-2.5 text-xs font-medium transition-colors ${
-                  activeTab === tab.id
-                    ? 'border-indigo-600 text-indigo-700'
-                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
-                }`}
-              >
-                <span className="text-[11px]">{tab.icon}</span>
-                {tab.label}
-              </button>
-            ))}
-          </nav>
-        </div>
-      </header>
-
-      <main className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
         {/* ── Global loading skeleton ──────────────────────────────────────── */}
         {loading && (
           <div className="space-y-4 animate-pulse">
-            <div className="h-40 rounded-2xl bg-slate-200" />
-            <div className="h-6 w-48 rounded bg-slate-200" />
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="h-28 rounded-xl bg-slate-200" />
-              <div className="h-28 rounded-xl bg-slate-200" />
+            <div className="h-40 rounded-xl bg-brand-surface-tint/60" />
+            <div className="h-6 w-48 rounded bg-brand-surface-tint/60" />
+            <div className="grid gap-6 sm:grid-cols-2">
+              <div className="h-28 rounded-xl bg-brand-surface-tint/60" />
+              <div className="h-28 rounded-xl bg-brand-surface-tint/60" />
             </div>
           </div>
         )}
@@ -224,22 +294,83 @@ export default function StudentDashboard() {
           <>
             {/* ── OVERVIEW TAB ───────────────────────────────────────────── */}
             {activeTab === 'overview' && (
-              <div className="flex flex-col gap-6 p-4">
-                <FeeStatusCard fee={fee} />
+              <div className="flex flex-col gap-6">
+                {/* Stats Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* Attendance Card */}
+                  <div className="bg-brand-surface rounded-2xl border border-brand-border shadow-sm p-5 flex flex-col justify-between">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-brand-text-muted/80">Attendance</span>
+                      <div className="rounded-lg bg-brand-primary/10 p-2 rounded-xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4.5 w-4.5 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="mt-3">
+                      <p className="text-2xl font-bold text-brand-text">{attnData?.summary?.attendancePercentage ?? 0}%</p>
+                      <p className="text-xs text-brand-text-muted mt-1">
+                        {attnData?.summary ? `Present: ${attnData.summary.present}/${attnData.summary.totalClasses} classes` : 'No records'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Pending Fees Card */}
+                  <div className="bg-brand-surface rounded-2xl border border-brand-border shadow-sm p-5 flex flex-col justify-between">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-brand-text-muted/80">Pending Fees</span>
+                      <div className="rounded-lg bg-brand-primary/10 p-2 rounded-xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4.5 w-4.5 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 8h6m-5 0a3 3 0 110 6H9l3 3m-3-6h6m6 1a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="mt-3">
+                      <p className="text-2xl font-bold text-brand-text">{formatCurrency(fee?.amountDue ?? 0)}</p>
+                      <p className="text-xs text-brand-text-muted mt-1">
+                        {fee ? `Total paid: ${formatCurrency(fee.amountPaid)}` : 'No fee info'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Next Exam Card */}
+                  <div className="bg-brand-surface rounded-2xl border border-brand-border shadow-sm p-5 flex flex-col justify-between">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-brand-text-muted/80">Next Practice Test</span>
+                      <div className="rounded-lg bg-brand-primary/10 p-2 rounded-xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4.5 w-4.5 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="mt-3">
+                      <p className="text-lg font-bold text-brand-text truncate" title={tests[0]?.subject ?? 'No Exam'}>
+                        {tests[0]?.subject ?? 'No Exam'}
+                      </p>
+                      <p className="text-xs text-brand-text-muted mt-1 truncate" title={tests[0]?.testTitle ?? 'All caught up!'}>
+                        {tests[0]?.testTitle ?? 'All caught up!'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Quick materials preview */}
                 {materials.length > 0 && (
-                  <section className="w-full">
-                    <div className="flex items-center justify-between mb-3">
-                      <h2 className="text-sm font-semibold text-slate-900">Recent Materials</h2>
+                  <section className="bg-brand-surface rounded-2xl border border-brand-border shadow-sm p-6 flex flex-col gap-4">
+                    <div className="flex items-center justify-between border-b border-brand-border pb-3">
+                      <div>
+                        <h2 className="text-base font-bold text-brand-text">Recent Materials</h2>
+                        <p className="text-xs text-brand-text-muted mt-0.5">Quick access to newly uploaded study materials</p>
+                      </div>
                       <button
                         type="button"
                         onClick={() => setActiveTab('materials')}
-                        className="text-xs text-indigo-600 hover:underline"
+                        className="text-xs font-semibold text-brand-primary hover:text-brand-primary"
                       >
                         View all →
                       </button>
                     </div>
-                    <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="grid gap-6 sm:grid-cols-2">
                       {materials.slice(0, 2).map((item) => (
                         <MaterialCard key={item._id} item={item} />
                       ))}
@@ -267,21 +398,89 @@ export default function StudentDashboard() {
 
             {/* ── PAYMENTS TAB ───────────────────────────────────────────── */}
             {activeTab === 'payments' && (
-              <div className="space-y-5">
+              <div className="flex flex-col gap-6">
                 <FeeStatusCard fee={fee} />
                 {fee?.paymentHistory?.length > 0 && (
                   <PaymentHistoryTable history={fee.paymentHistory} />
                 )}
                 {!fee?.paymentHistory?.length && (
-                  <div className="rounded-xl border border-dashed border-slate-200 bg-white py-10 text-center">
-                    <p className="text-xs text-slate-400">No payments recorded yet.</p>
+                  <div className="rounded-xl border border-dashed border-brand-border bg-brand-surface py-10 text-center">
+                    <p className="text-xs text-brand-text-muted/80">No payments recorded yet.</p>
                   </div>
                 )}
               </div>
             )}
           </>
         )}
-      </main>
+          </div>
+        </main>
+      </div>
+
+      {/* ── Mobile Bottom Nav (hidden on desktop) ──────────────────────────── */}
+      <nav className="lg:hidden fixed bottom-6 left-4 right-4 z-50 bg-brand-primary text-brand-surface rounded-[2rem] px-4 py-3 flex justify-between items-center shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] border border-brand-border/20 backdrop-blur-xl">
+        {TABS.map((item) => {
+          const isActive = activeTab === item.id
+          // Custom SVG icons matching the tabs
+          const renderIcon = (id, active) => {
+            const color = active ? 'text-brand-gold' : 'text-brand-surface/60'
+            const fill = active ? 'currentColor' : 'none'
+            switch (id) {
+              case 'overview':
+                return (
+                  <svg className={`w-6 h-6 ${color} transition-all duration-300`} fill={fill} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={active ? 2 : 1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                )
+              case 'materials':
+                return (
+                  <svg className={`w-6 h-6 ${color} transition-all duration-300`} fill={fill} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={active ? 2 : 1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                  </svg>
+                )
+              case 'tests':
+                return (
+                  <svg className={`w-6 h-6 ${color} transition-all duration-300`} fill={fill} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={active ? 2 : 1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                  </svg>
+                )
+              case 'attendance':
+                return (
+                  <svg className={`w-6 h-6 ${color} transition-all duration-300`} fill={fill} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={active ? 2 : 1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                )
+              case 'payments':
+                return (
+                  <svg className={`w-6 h-6 ${color} transition-all duration-300`} fill={fill} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={active ? 2 : 1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                )
+              default:
+                return null
+            }
+          }
+
+          return (
+            <button
+              key={item.id}
+              onClick={() => setActiveTab(item.id)}
+              className="relative flex-1 flex flex-col items-center justify-center p-2 group"
+            >
+              {isActive && (
+                <div className="absolute inset-0 bg-brand-surface/10 rounded-xl scale-105 transition-transform duration-300" />
+              )}
+              <div className={`relative transition-transform duration-300 ${isActive ? '-translate-y-1' : 'group-hover:-translate-y-0.5'}`}>
+                {renderIcon(item.id, isActive)}
+              </div>
+              {isActive && (
+                <span className="absolute bottom-0 text-[10px] font-bold text-brand-gold mt-1 opacity-100 transition-opacity">
+                  {item.label}
+                </span>
+              )}
+            </button>
+          )
+        })}
+      </nav>
     </div>
   )
 }
@@ -291,11 +490,11 @@ export default function StudentDashboard() {
 function AttendanceSummaryCard({ attnData, onViewAll }) {
   if (!attnData?.summary) {
     return (
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <div className="flex items-center justify-between mb-1">
-          <h2 className="text-sm font-semibold text-slate-900">My Attendance</h2>
+      <section className="rounded-2xl border border-brand-border bg-brand-surface p-6 shadow-sm">
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-sm font-bold text-brand-text">My Attendance</h2>
         </div>
-        <p className="text-xs text-slate-400 py-2">No attendance records yet.</p>
+        <p className="text-xs text-brand-text-muted/80 py-2">No attendance records yet.</p>
       </section>
     )
   }
@@ -306,16 +505,16 @@ function AttendanceSummaryCard({ attnData, onViewAll }) {
   const dash = (attendancePercentage / 100) * circumference
 
   return (
-    <section className="w-full rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="w-full rounded-2xl border border-brand-border bg-brand-surface p-6 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">My Attendance</p>
-          <h2 className="text-base font-semibold text-slate-900 mt-0.5">Quick Overview</h2>
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-brand-text-muted/80">My Attendance</p>
+          <h2 className="text-base font-bold text-brand-text mt-0.5">Quick Overview</h2>
         </div>
         <button
           type="button"
           onClick={onViewAll}
-          className="text-xs text-indigo-600 hover:underline font-medium"
+          className="text-xs text-brand-primary hover:text-brand-primary font-semibold transition-colors"
         >
           Full history →
         </button>
@@ -325,7 +524,7 @@ function AttendanceSummaryCard({ attnData, onViewAll }) {
         {/* SVG circle progress */}
         <div className="shrink-0">
           <svg width="88" height="88" viewBox="0 0 88 88">
-            <circle cx="44" cy="44" r="36" fill="none" stroke="#e2e8f0" strokeWidth="8" />
+            <circle cx="44" cy="44" r="36" fill="none" stroke="#f3f4f6" strokeWidth="8" />
             <circle
               cx="44" cy="44" r="36"
               fill="none"
@@ -336,7 +535,7 @@ function AttendanceSummaryCard({ attnData, onViewAll }) {
               transform="rotate(-90 44 44)"
               style={{ transition: 'stroke-dasharray 1s ease' }}
             />
-            <text x="44" y="47" textAnchor="middle" fontSize="14" fontWeight="700" fill="#1e293b">
+            <text x="44" y="47" textAnchor="middle" fontSize="14" fontWeight="700" fill="currentColor" className="text-brand-text">
               {attendancePercentage}%
             </text>
           </svg>
@@ -345,13 +544,13 @@ function AttendanceSummaryCard({ attnData, onViewAll }) {
         {/* Stat pills */}
         <div className="grid grid-cols-2 gap-2 flex-1">
           {[
-            { label: 'Total',   value: totalClasses, color: 'text-slate-800',  bg: 'bg-slate-50 border-slate-100' },
-            { label: 'Present', value: present,       color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-100' },
-            { label: 'Late',    value: late,          color: 'text-amber-700',  bg: 'bg-amber-50 border-amber-100'   },
-            { label: 'Absent',  value: absent,        color: 'text-rose-700',   bg: 'bg-rose-50 border-rose-100'     },
+            { label: 'Total',   value: totalClasses, color: 'text-brand-text', labelColor: 'text-brand-text-muted', bg: 'bg-brand-surface-tint border-brand-border' },
+            { label: 'Present', value: present,       color: 'text-emerald-800 dark:text-emerald-300', labelColor: 'text-emerald-700 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-100 dark:border-emerald-900/50' },
+            { label: 'Late',    value: late,          color: 'text-amber-800 dark:text-amber-300', labelColor: 'text-amber-700 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-950/30 border-amber-100 dark:border-amber-900/50'   },
+            { label: 'Absent',  value: absent,        color: 'text-rose-800 dark:text-rose-300', labelColor: 'text-rose-700 dark:text-rose-400', bg: 'bg-rose-50 dark:bg-rose-950/30 border-rose-100 dark:border-rose-900/50'     },
           ].map((s) => (
             <div key={s.label} className={`rounded-xl border px-3 py-2 ${s.bg}`}>
-              <p className="text-[9px] font-medium uppercase text-slate-400 tracking-wide">{s.label}</p>
+              <p className={`text-[9px] font-semibold uppercase tracking-wide ${s.labelColor}`}>{s.label}</p>
               <p className={`text-lg font-bold ${s.color}`}>{s.value}</p>
             </div>
           ))}
@@ -368,10 +567,10 @@ function AttendanceHistoryPage({ attnData }) {
 
   if (!attnData?.summary) {
     return (
-      <div className="rounded-xl border border-dashed border-slate-200 bg-white p-12 text-center">
+      <div className="rounded-xl border border-dashed border-brand-border bg-brand-surface p-12 text-center">
         <p className="text-2xl mb-2">📅</p>
-        <p className="text-sm font-semibold text-slate-700">No attendance data yet</p>
-        <p className="text-xs text-slate-400 mt-1">Your teacher hasn't recorded any sessions for your batch yet.</p>
+        <p className="text-sm font-bold text-brand-text">No attendance data yet</p>
+        <p className="text-xs text-brand-text-muted mt-1">Your teacher hasn't recorded any sessions for your batch yet.</p>
       </div>
     )
   }
@@ -403,14 +602,14 @@ function AttendanceHistoryPage({ attnData }) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       {/* ── Header metric card ────────────────────────────────────────────── */}
-      <div className="w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="w-full rounded-2xl border border-brand-border bg-brand-surface p-6 shadow-sm">
         <div className="flex flex-col sm:flex-row items-center gap-6">
           {/* Large donut */}
           <div className="shrink-0 flex flex-col items-center gap-2">
             <svg width="120" height="120" viewBox="0 0 120 120">
-              <circle cx="60" cy="60" r="52" fill="none" stroke="#f1f5f9" strokeWidth="10" />
+              <circle cx="60" cy="60" r="52" fill="none" stroke="#f3f4f6" strokeWidth="10" />
               <circle
                 cx="60" cy="60" r="52"
                 fill="none"
@@ -421,10 +620,10 @@ function AttendanceHistoryPage({ attnData }) {
                 transform="rotate(-90 60 60)"
                 style={{ transition: 'stroke-dasharray 1.2s ease' }}
               />
-              <text x="60" y="56" textAnchor="middle" fontSize="22" fontWeight="800" fill="#0f172a">
+              <text x="60" y="56" textAnchor="middle" fontSize="22" fontWeight="800" fill="#1f2937">
                 {attendancePercentage}%
               </text>
-              <text x="60" y="72" textAnchor="middle" fontSize="9" fill="#94a3b8">
+              <text x="60" y="72" textAnchor="middle" fontSize="9" fill="#9ca3af">
                 Attendance
               </text>
             </svg>
@@ -436,16 +635,16 @@ function AttendanceHistoryPage({ attnData }) {
 
           {/* Stats grid */}
           <div className="flex-1 w-full">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-3">Breakdown</p>
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-brand-text-muted/80 mb-3">Breakdown</p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                { label: 'Total Classes', value: totalClasses, accent: 'text-slate-900',   bg: 'bg-slate-50  border-slate-200'   },
-                { label: 'Present',       value: present,      accent: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200' },
-                { label: 'Late',          value: late,         accent: 'text-amber-700',   bg: 'bg-amber-50  border-amber-200'   },
-                { label: 'Absent',        value: absent,       accent: 'text-rose-700',    bg: 'bg-rose-50   border-rose-200'    },
+                { label: 'Total Classes', value: totalClasses, accent: 'text-brand-text',   labelColor: 'text-brand-text-muted', bg: 'bg-brand-surface-tint border-brand-border' },
+                { label: 'Present',       value: present,      accent: 'text-emerald-800 dark:text-emerald-300', labelColor: 'text-emerald-700 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-100 dark:border-emerald-900/50' },
+                { label: 'Late',          value: late,         accent: 'text-amber-800 dark:text-amber-300', labelColor: 'text-amber-700 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-950/30 border-amber-100 dark:border-amber-900/50' },
+                { label: 'Absent',        value: absent,       accent: 'text-rose-800 dark:text-rose-300', labelColor: 'text-rose-700 dark:text-rose-400', bg: 'bg-rose-50 dark:bg-rose-950/30 border-rose-100 dark:border-rose-900/50' },
               ].map((s) => (
                 <div key={s.label} className={`rounded-xl border px-4 py-3 ${s.bg}`}>
-                  <p className="text-[9px] uppercase font-medium text-slate-400 tracking-wide">{s.label}</p>
+                  <p className={`text-[9px] uppercase font-semibold tracking-wide ${s.labelColor}`}>{s.label}</p>
                   <p className={`text-2xl font-bold mt-1 ${s.accent}`}>{s.value}</p>
                 </div>
               ))}
@@ -453,9 +652,9 @@ function AttendanceHistoryPage({ attnData }) {
 
             {/* Streak */}
             {streak > 0 && (
-              <div className="mt-3 inline-flex items-center gap-2 rounded-xl bg-indigo-50 border border-indigo-100 px-3 py-2">
+              <div className="mt-3 inline-flex items-center gap-2 rounded-xl bg-brand-primary/10 border border-brand-border/40 px-3 py-2">
                 <span className="text-base">🔥</span>
-                <span className="text-xs font-semibold text-indigo-700">
+                <span className="text-xs font-semibold text-brand-primary">
                   {streak}-day attendance streak
                 </span>
               </div>
@@ -466,20 +665,20 @@ function AttendanceHistoryPage({ attnData }) {
 
       {/* ── Calendar dot heatmap ──────────────────────────────────────────── */}
       {history.length > 0 && (
-        <section className="w-full rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-4">Session Heatmap</p>
+        <section className="w-full rounded-2xl border border-brand-border bg-brand-surface p-6 shadow-sm">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-brand-text-muted/80 mb-4">Session Heatmap</p>
           <div className="flex flex-wrap gap-1.5">
             {[...history].reverse().slice(0, 60).map((h, i) => (
               <div
                 key={i}
                 title={`${formatDate(h.date)} — ${h.status}`}
-                className={`h-5 w-5 rounded-sm ${STATUS_DOT[h.status] ?? 'bg-slate-200'} opacity-90 hover:opacity-100 hover:scale-110 transition-transform cursor-default`}
+                className={`h-5 w-5 rounded-sm ${STATUS_DOT[h.status] ?? 'bg-gray-200'} opacity-90 hover:opacity-100 hover:scale-110 transition-transform cursor-default`}
               />
             ))}
           </div>
           <div className="flex items-center gap-4 mt-4">
             {[['Present', 'bg-emerald-500'], ['Late', 'bg-amber-400'], ['Absent', 'bg-rose-500']].map(([label, dot]) => (
-              <span key={label} className="flex items-center gap-1.5 text-[10px] text-slate-500 font-medium">
+              <span key={label} className="flex items-center gap-1.5 text-[10px] text-brand-text-muted font-medium">
                 <span className={`h-3 w-3 rounded-sm ${dot}`} />
                 {label}
               </span>
@@ -489,11 +688,11 @@ function AttendanceHistoryPage({ attnData }) {
       )}
 
       {/* ── Log with filter ───────────────────────────────────────────────── */}
-      <section className="w-full rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-        <div className="px-5 py-3 border-b border-slate-100 flex items-center justify-between gap-3 flex-wrap">
+      <section className="w-full rounded-2xl border border-brand-border bg-brand-surface shadow-sm p-6 flex flex-col gap-4">
+        <div className="flex items-center justify-between gap-3 flex-wrap border-b border-brand-border pb-3">
           <div>
-            <h2 className="text-sm font-semibold text-slate-900">Attendance Log</h2>
-            <p className="text-[11px] text-slate-500 mt-0.5">
+            <h2 className="text-base font-bold text-brand-text">Attendance Log</h2>
+            <p className="text-xs text-brand-text-muted mt-0.5">
               {filtered.length} record{filtered.length !== 1 ? 's' : ''}
               {filter !== 'all' && ` · filtered by ${filter}`}
             </p>
@@ -502,11 +701,11 @@ function AttendanceHistoryPage({ attnData }) {
           <div className="flex items-center gap-1.5">
             {['all', 'Present', 'Late', 'Absent'].map((f) => {
               const active = filter === f
-              const colors = {
-                all:     active ? 'bg-slate-800 text-white'   : 'bg-white text-slate-600 border-slate-200',
-                Present: active ? 'bg-emerald-600 text-white' : 'bg-white text-emerald-700 border-emerald-200',
-                Late:    active ? 'bg-amber-500 text-white'   : 'bg-white text-amber-700 border-amber-200',
-                Absent:  active ? 'bg-rose-600 text-white'    : 'bg-white text-rose-700 border-rose-200',
+               const colors = {
+                all:     active ? 'bg-brand-primary text-brand-surface'   : 'bg-brand-surface text-brand-text-muted border-brand-border hover:bg-brand-surface-tint',
+                Present: active ? 'bg-emerald-600 text-white' : 'bg-brand-surface text-emerald-700 dark:text-emerald-400 border-brand-border hover:bg-emerald-50/10',
+                Late:    active ? 'bg-amber-500 text-white'   : 'bg-brand-surface text-amber-700 dark:text-amber-400 border-brand-border hover:bg-amber-50/10',
+                Absent:  active ? 'bg-rose-600 text-white'    : 'bg-brand-surface text-rose-700 dark:text-rose-400 border-brand-border hover:bg-rose-50/10',
               }
               return (
                 <button
@@ -524,31 +723,31 @@ function AttendanceHistoryPage({ attnData }) {
 
         {filtered.length === 0 ? (
           <div className="py-10 text-center">
-            <p className="text-xs text-slate-400">No records matching this filter.</p>
+            <p className="text-xs text-brand-text-muted">No records matching this filter.</p>
           </div>
         ) : (
-          <div className="divide-y divide-slate-100 max-h-96 overflow-y-auto">
+          <div className="divide-y divide-brand-border max-h-96 overflow-y-auto pr-1">
             {filtered.map((log, idx) => {
               const badgeCfg = {
-                Present: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
-                Late:    'bg-amber-50 text-amber-700 ring-amber-200',
-                Absent:  'bg-rose-50 text-rose-700 ring-rose-200',
-              }[log.status] ?? 'bg-slate-50 text-slate-600 ring-slate-200'
+                Present: 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-400 ring-emerald-100 dark:ring-emerald-900/50',
+                Late:    'bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-400 ring-amber-100 dark:ring-amber-900/50',
+                Absent:  'bg-rose-50 dark:bg-rose-950/30 text-rose-800 dark:text-rose-400 ring-rose-100 dark:ring-rose-900/50',
+              }[log.status] ?? 'bg-brand-surface-tint text-brand-text-muted ring-brand-border'
 
               const dotCfg = {
                 Present: 'bg-emerald-500',
                 Late:    'bg-amber-400',
                 Absent:  'bg-rose-500',
-              }[log.status] ?? 'bg-slate-300'
+              }[log.status] ?? 'bg-gray-400'
 
               return (
                 <div
                   key={idx}
-                  className="flex items-center justify-between px-5 py-3 hover:bg-slate-50/60 transition-colors"
+                  className="flex items-center justify-between py-3 hover:bg-brand-surface-tint/60 transition-colors"
                 >
                   <div className="flex items-center gap-3">
                     <span className={`h-2 w-2 rounded-full shrink-0 ${dotCfg}`} />
-                    <span className="text-xs font-medium text-slate-700">
+                    <span className="text-xs font-semibold text-brand-text">
                       {new Intl.DateTimeFormat('en-IN', {
                         weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
                       }).format(new Date(log.date))}
@@ -572,8 +771,8 @@ function AttendanceHistoryPage({ attnData }) {
 function FeeStatusCard({ fee }) {
   if (!fee) {
     return (
-      <div className="rounded-2xl border border-dashed border-slate-300 bg-white py-8 text-center">
-        <p className="text-xs text-slate-400">Fee information is not available yet.</p>
+      <div className="rounded-xl border border-dashed border-brand-border bg-brand-surface py-8 text-center">
+        <p className="text-xs text-brand-text-muted/80">Fee information is not available yet.</p>
       </div>
     )
   }
@@ -585,11 +784,11 @@ function FeeStatusCard({ fee }) {
       : 0
 
   return (
-    <section className="w-full rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="w-full rounded-2xl border border-brand-border bg-brand-surface p-6 shadow-sm">
       <div className="flex items-start justify-between gap-3 mb-4">
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">My Fee Status</p>
-          <h2 className="text-base font-semibold text-slate-900 mt-0.5">Course Fee Overview</h2>
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-brand-text-muted/80">My Fee Status</p>
+          <h2 className="text-base font-bold text-brand-text mt-0.5">Course Fee Overview</h2>
         </div>
         <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide ring-1 ${config.pill}`}>
           {config.icon}
@@ -603,27 +802,19 @@ function FeeStatusCard({ fee }) {
         <FeeMetric label="Balance Due"  value={formatCurrency(fee.amountDue)}   accent={fee.amountDue > 0 ? 'amber' : 'slate'} />
       </div>
 
-      <div>
-        <div className="flex items-center justify-between mb-1.5">
-          <span className="text-[10px] text-slate-500">Payment progress</span>
-          <span className="text-[10px] font-semibold text-slate-700">{paidPercent}%</span>
-        </div>
-        <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
-          <div
-            className={`h-full rounded-full transition-all duration-700 ${config.bar}`}
-            style={{ width: `${paidPercent}%` }}
-          />
-        </div>
-      </div>
     </section>
   )
 }
 
 function FeeMetric({ label, value, accent = 'slate' }) {
-  const colours = { emerald: 'text-emerald-800', amber: 'text-amber-800', slate: 'text-slate-900' }
+  const colours = { 
+    emerald: 'text-emerald-700 dark:text-emerald-400', 
+    amber: 'text-amber-700 dark:text-amber-400', 
+    slate: 'text-brand-text' 
+  }
   return (
-    <div className="rounded-xl border border-slate-100 bg-slate-50 px-3 py-2.5">
-      <p className="text-[10px] font-medium text-slate-500 uppercase tracking-wide">{label}</p>
+    <div className="rounded-xl border border-brand-border bg-brand-surface-tint px-3 py-2.5">
+      <p className="text-[10px] font-medium text-brand-text-muted/80 uppercase tracking-wide">{label}</p>
       <p className={`text-sm font-bold mt-1 ${colours[accent] ?? colours.slate}`}>{value}</p>
     </div>
   )
@@ -648,9 +839,9 @@ const SUBJECT_ICONS = {
 }
 
 const TYPE_ICON_MAP = {
-  Notes:          { icon: '📄', badge: 'bg-emerald-50 text-emerald-700 ring-emerald-200' },
-  Assignment:     { icon: '✏️', badge: 'bg-amber-50 text-amber-700 ring-amber-200' },
-  'Lecture Link': { icon: '🎬', badge: 'bg-sky-50 text-sky-700 ring-sky-200' },
+  Notes:          { icon: '📄', badge: 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-400 ring-emerald-100 dark:ring-emerald-900/50' },
+  Assignment:     { icon: '✏️', badge: 'bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-400 ring-amber-100 dark:ring-amber-900/50' },
+  'Lecture Link': { icon: '🎬', badge: 'bg-sky-50 dark:bg-sky-950/30 text-sky-800 dark:text-sky-400 ring-sky-100 dark:ring-sky-900/50' },
 }
 
 function subjectIcon(subject) {
@@ -663,10 +854,10 @@ function StudyVault({ materials }) {
 
   if (materials.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-slate-300 bg-white py-16 text-center">
+      <div className="rounded-xl border border-dashed border-brand-border bg-brand-surface py-16 text-center">
         <p className="text-4xl mb-3">📚</p>
-        <p className="text-sm font-semibold text-slate-700">No materials yet</p>
-        <p className="text-xs text-slate-400 mt-1">Your teacher hasn't uploaded any materials.<br />Check back soon!</p>
+        <p className="text-sm font-bold text-brand-text">No materials yet</p>
+        <p className="text-xs text-brand-text-muted mt-1">Your teacher hasn't uploaded any materials.<br />Check back soon!</p>
       </div>
     )
   }
@@ -693,28 +884,28 @@ function StudyVault({ materials }) {
   }
 
   return (
-    <section className="space-y-5">
+    <section className="flex flex-col gap-6">
       {/* Header */}
-      <div className="flex items-end justify-between">
+      <div className="flex items-end justify-between border-b border-brand-border pb-3">
         <div>
-          <h2 className="text-base font-semibold text-slate-900">Study Vault</h2>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <h2 className="text-base font-bold text-brand-text">Study Vault</h2>
+          <p className="text-xs text-brand-text-muted mt-0.5">
             {totalCount} resource{totalCount !== 1 ? 's' : ''} across {subjects.length} subject{subjects.length !== 1 ? 's' : ''}
           </p>
         </div>
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">📚 Your Batch</span>
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-brand-text-muted/80">📚 Your Batch</span>
       </div>
 
       {/* Subject folder grid */}
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
         {subjects.map((subj) => {
           const chapters = Object.keys(grouped[subj]).sort()
           const fileCount = Object.values(grouped[subj]).flat().length
           const isOpen = !!openSubjects[subj]
 
           return (
-            <div key={subj} className={`w-full rounded-2xl border bg-white shadow-sm overflow-hidden transition-all duration-300 ${
-              isOpen ? 'border-indigo-200 shadow-indigo-100/60' : 'border-slate-200 hover:border-slate-300 hover:shadow-md'
+            <div key={subj} className={`w-full rounded-2xl border border-brand-border bg-brand-surface shadow-sm overflow-hidden transition-all duration-300 ${
+              isOpen ? 'border-brand-border shadow-sm' : 'border-brand-border hover:border-gray-200 hover:shadow-md'
             }`}>
               {/* Subject header card */}
               <button
@@ -724,24 +915,24 @@ function StudyVault({ materials }) {
               >
                 {/* Icon */}
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0 transition-colors ${
-                  isOpen ? 'bg-indigo-100' : 'bg-slate-100 group-hover:bg-indigo-50'
+                  isOpen ? 'bg-brand-primary/10' : 'bg-gray-100 group-hover:bg-brand-primary/10'
                 }`}>
                   {subjectIcon(subj)}
                 </div>
 
                 <div className="flex-1 min-w-0">
                   <p className={`text-sm font-bold truncate transition-colors ${
-                    isOpen ? 'text-indigo-700' : 'text-slate-900'
+                    isOpen ? 'text-brand-primary' : 'text-brand-text'
                   }`}>{subj}</p>
-                  <p className="text-[10px] text-slate-400 mt-0.5">
+                  <p className="text-[10px] text-brand-text-muted/80 mt-0.5">
                     {chapters.length} chapter{chapters.length !== 1 ? 's' : ''} · {fileCount} file{fileCount !== 1 ? 's' : ''}
                   </p>
                 </div>
 
                 {/* Chevron */}
                 <svg
-                  className={`w-4 h-4 text-slate-400 shrink-0 transition-transform duration-300 ${
-                    isOpen ? 'rotate-180 text-indigo-500' : ''
+                  className={`w-4 h-4 text-brand-text-muted/80 shrink-0 transition-transform duration-300 ${
+                    isOpen ? 'rotate-180 text-blue-500' : ''
                   }`}
                   xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
@@ -752,7 +943,7 @@ function StudyVault({ materials }) {
 
               {/* Chapters list — revealed when subject is open */}
               {isOpen && (
-                <div className="border-t border-indigo-100 bg-slate-50/70 divide-y divide-slate-100">
+                <div className="border-t border-brand-border/40 bg-brand-surface-tint/70 divide-y divide-brand-border">
                   {chapters.map((chap) => {
                     const chapKey = `${subj}::${chap}`
                     const files = grouped[subj][chap]
@@ -764,15 +955,15 @@ function StudyVault({ materials }) {
                         <button
                           type="button"
                           onClick={() => toggleChapter(chapKey)}
-                          className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/70 transition-colors"
+                          className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-brand-surface-tint transition-colors"
                         >
                           <span className="text-sm">{isChapOpen ? '📂' : '📁'}</span>
-                          <span className="flex-1 text-xs font-semibold text-slate-700 truncate">{chap}</span>
-                          <span className="shrink-0 rounded-full bg-indigo-100 text-indigo-700 text-[9px] font-bold px-1.5 py-0.5">
+                          <span className="flex-1 text-xs font-bold text-brand-text truncate">{chap}</span>
+                          <span className="shrink-0 rounded-full bg-brand-primary/10 text-brand-primary text-[9px] font-bold px-1.5 py-0.5">
                             {files.length}
                           </span>
                           <svg
-                            className={`w-3.5 h-3.5 text-slate-400 shrink-0 transition-transform duration-200 ${
+                            className={`w-3.5 h-3.5 text-brand-text-muted/80 shrink-0 transition-transform duration-200 ${
                               isChapOpen ? 'rotate-180' : ''
                             }`}
                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
@@ -790,28 +981,28 @@ function StudyVault({ materials }) {
                               return (
                                 <div
                                   key={file._id}
-                                  className="w-full rounded-xl border border-slate-200 bg-white p-3 flex items-start gap-3 hover:border-indigo-200 hover:shadow-sm transition-all"
+                                  className="w-full rounded-2xl border border-brand-border bg-brand-surface p-3 flex items-start gap-3 hover:border-brand-border hover:shadow-sm transition-all"
                                 >
                                   <span className="text-lg mt-0.5 shrink-0">{typeCfg.icon}</span>
                                   <div className="flex-1 min-w-0">
-                                    <p className="text-xs font-semibold text-slate-900 leading-snug line-clamp-2">
+                                    <p className="text-xs font-bold text-brand-text leading-snug line-clamp-2">
                                       {file.title}
                                     </p>
                                     <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                                       <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide ring-1 ${typeCfg.badge}`}>
                                         {file.materialType}
                                       </span>
-                                      <span className="text-[10px] text-slate-400">{formatDate(file.createdAt)}</span>
+                                      <span className="text-[10px] text-brand-text-muted/80">{formatDate(file.createdAt)}</span>
                                     </div>
                                     {file.description && (
-                                      <p className="text-[10px] text-slate-500 mt-1 line-clamp-1">{file.description}</p>
+                                      <p className="text-[10px] text-brand-text-muted mt-1 line-clamp-1">{file.description}</p>
                                     )}
                                   </div>
                                   <a
                                     href={file.fileUrlOrLink}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="shrink-0 rounded-lg bg-indigo-600 px-2.5 py-1.5 text-[10px] font-bold text-white hover:bg-indigo-500 transition-colors whitespace-nowrap"
+                                    className="shrink-0 rounded-lg bg-brand-accent px-2.5 py-1.5 text-[10px] font-bold text-white dark:text-brand-bg hover:bg-brand-accent-hover transition-colors whitespace-nowrap shadow-sm"
                                   >
                                     Open ↗
                                   </a>
@@ -838,28 +1029,28 @@ function StudyVault({ materials }) {
 function MaterialCard({ item }) {
   const typeConfig = MATERIAL_TYPE_CONFIG[item.materialType] ?? MATERIAL_TYPE_CONFIG.Notes
   return (
-    <div className="w-full flex flex-col rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm hover:shadow-md hover:border-slate-300 transition-all">
+    <div className="w-full flex flex-col rounded-xl border border-brand-border bg-brand-surface-tint p-3.5 shadow-sm hover:shadow-md hover:border-brand-border/60 transition-all">
       <div className="flex items-start justify-between gap-2 mb-2">
         <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide ring-1 ${typeConfig.badge}`}>
           {item.materialType}
         </span>
-        <span className="text-[10px] text-slate-400">{formatDate(item.createdAt)}</span>
+        <span className="text-[10px] text-brand-text-muted/80">{formatDate(item.createdAt)}</span>
       </div>
-      <h3 className="text-sm font-semibold text-slate-900 mb-1 leading-snug">{item.title}</h3>
+      <h3 className="text-sm font-semibold text-brand-text mb-1 leading-snug">{item.title}</h3>
       <div className="flex flex-wrap gap-1.5 mb-2">
-        <span className="rounded bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600">{item.subject}</span>
+        <span className="rounded-md bg-brand-surface border border-brand-border px-2 py-0.5 text-[10px] font-semibold text-brand-text-muted">{item.subject}</span>
         {item.chapter && (
-          <span className="rounded bg-indigo-50 px-2 py-0.5 text-[10px] font-medium text-indigo-600">{item.chapter}</span>
+          <span className="rounded-md bg-brand-accent/10 border border-brand-accent/20 px-2 py-0.5 text-[10px] font-semibold text-brand-accent">{item.chapter}</span>
         )}
       </div>
       {item.description && (
-        <p className="text-[11px] text-slate-500 leading-relaxed line-clamp-2 mb-3 flex-1">{item.description}</p>
+        <p className="text-[11px] text-brand-text-muted leading-relaxed line-clamp-2 mb-3 flex-1">{item.description}</p>
       )}
       <a
         href={item.fileUrlOrLink}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-auto block text-center rounded-lg bg-indigo-600 px-3 py-1.5 text-[11px] font-semibold text-white hover:bg-indigo-500 transition-colors"
+        className="mt-auto block text-center rounded-lg bg-brand-accent px-3 py-1.5 text-[11px] font-bold text-white dark:text-brand-bg hover:bg-brand-accent-hover transition-colors shadow-sm"
       >
         Open Resource ↗
       </a>
@@ -871,33 +1062,33 @@ function MaterialCard({ item }) {
 
 function PaymentHistoryTable({ history }) {
   return (
-    <section className="w-full rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-      <div className="px-4 py-3 border-b border-slate-100 bg-slate-50/60">
-        <h2 className="text-sm font-semibold text-slate-900">Payment History</h2>
-        <p className="text-[11px] text-slate-500 mt-0.5">{history.length} transaction{history.length !== 1 ? 's' : ''} recorded</p>
+    <section className="w-full rounded-2xl border border-brand-border bg-brand-surface shadow-sm p-6">
+      <div className="border-b border-brand-border pb-3 mb-4">
+        <h2 className="text-sm font-semibold text-brand-text">Payment History</h2>
+        <p className="text-xs text-brand-text-muted mt-0.5">{history.length} transaction{history.length !== 1 ? 's' : ''} recorded</p>
       </div>
       <div className="overflow-x-auto">
         <table className="min-w-full text-left text-xs">
           <thead>
-            <tr className="border-b border-slate-100 bg-slate-50/50">
-              <th className="px-4 py-2.5 font-semibold text-slate-600">Date</th>
-              <th className="px-4 py-2.5 font-semibold text-slate-600">Amount</th>
-              <th className="px-4 py-2.5 font-semibold text-slate-600">Mode</th>
+            <tr className="border-b border-brand-border bg-brand-surface-tint/50">
+              <th className="px-4 py-2.5 font-semibold text-brand-text-muted">Date</th>
+              <th className="px-4 py-2.5 font-semibold text-brand-text-muted">Amount</th>
+              <th className="px-4 py-2.5 font-semibold text-brand-text-muted">Mode</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-brand-border">
             {history.map((entry) => (
-              <tr key={entry._id} className="hover:bg-slate-50/60 transition-colors">
-                <td className="px-4 py-2.5 text-slate-600 whitespace-nowrap">
+              <tr key={entry._id} className="hover:bg-brand-surface-tint/60 transition-colors">
+                <td className="px-4 py-2.5 text-brand-text-muted whitespace-nowrap">
                   {new Intl.DateTimeFormat('en-IN', {
                     day: 'numeric', month: 'short', year: 'numeric',
                     hour: '2-digit', minute: '2-digit',
                   }).format(new Date(entry.paidAt))}
                 </td>
-                <td className="px-4 py-2.5 font-semibold text-emerald-700">
+                <td className="px-4 py-2.5 font-bold text-emerald-700 dark:text-emerald-400">
                   {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(entry.amount)}
                 </td>
-                <td className="px-4 py-2.5 text-slate-700">{entry.method || '—'}</td>
+                <td className="px-4 py-2.5 text-brand-text">{entry.method || '—'}</td>
               </tr>
             ))}
           </tbody>
@@ -915,10 +1106,10 @@ function PracticeTests({ tests }) {
 
   if (tests.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-slate-300 bg-white py-16 text-center">
+      <div className="rounded-xl border border-dashed border-brand-border bg-brand-surface py-16 text-center">
         <p className="text-4xl mb-3">📝</p>
-        <p className="text-sm font-semibold text-slate-700">No practice tests yet</p>
-        <p className="text-xs text-slate-400 mt-1">Your teacher hasn't uploaded any practice tests.<br />Check back later!</p>
+        <p className="text-sm font-semibold text-brand-text">No practice tests yet</p>
+        <p className="text-xs text-brand-text-muted/80 mt-1">Your teacher hasn't uploaded any practice tests.<br />Check back later!</p>
       </div>
     )
   }
@@ -945,28 +1136,28 @@ function PracticeTests({ tests }) {
   }
 
   return (
-    <section className="space-y-5">
+    <section className="flex flex-col gap-6">
       {/* Header */}
-      <div className="flex items-end justify-between">
+      <div className="flex items-end justify-between border-b border-brand-border pb-3">
         <div>
-          <h2 className="text-base font-semibold text-slate-900">Practice Tests</h2>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <h2 className="text-base font-bold text-brand-text">Practice Tests</h2>
+          <p className="text-xs text-brand-text-muted mt-0.5">
             {totalCount} test{totalCount !== 1 ? 's' : ''} across {subjects.length} subject{subjects.length !== 1 ? 's' : ''}
           </p>
         </div>
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">📝 Practice Zone</span>
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-brand-text-muted/80">📝 Practice Zone</span>
       </div>
 
       {/* Subject folder grid */}
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
         {subjects.map((subj) => {
           const chapters = Object.keys(grouped[subj]).sort()
           const fileCount = Object.values(grouped[subj]).flat().length
           const isOpen = !!openSubjects[subj]
 
           return (
-            <div key={subj} className={`w-full rounded-2xl border bg-white shadow-sm overflow-hidden transition-all duration-300 ${
-              isOpen ? 'border-violet-200 shadow-violet-100/60' : 'border-slate-200 hover:border-slate-300 hover:shadow-md'
+            <div key={subj} className={`w-full rounded-2xl border border-brand-border bg-brand-surface shadow-sm overflow-hidden transition-all duration-300 ${
+              isOpen ? 'border-brand-border shadow-sm' : 'border-brand-border hover:border-gray-200 hover:shadow-md'
             }`}>
               {/* Subject header card */}
               <button
@@ -976,24 +1167,24 @@ function PracticeTests({ tests }) {
               >
                 {/* Icon */}
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0 transition-colors ${
-                  isOpen ? 'bg-violet-100' : 'bg-slate-100 group-hover:bg-violet-50'
+                  isOpen ? 'bg-brand-primary/10' : 'bg-gray-100 group-hover:bg-brand-primary/10'
                 }`}>
                   {subjectIcon(subj)}
                 </div>
 
                 <div className="flex-1 min-w-0">
                   <p className={`text-sm font-bold truncate transition-colors ${
-                    isOpen ? 'text-violet-700' : 'text-slate-900'
+                    isOpen ? 'text-brand-primary' : 'text-brand-text'
                   }`}>{subj}</p>
-                  <p className="text-[10px] text-slate-400 mt-0.5">
+                  <p className="text-[10px] text-brand-text-muted/80 mt-0.5">
                     {chapters.length} chapter{chapters.length !== 1 ? 's' : ''} · {fileCount} test{fileCount !== 1 ? 's' : ''}
                   </p>
                 </div>
 
                 {/* Chevron */}
                 <svg
-                  className={`w-4 h-4 text-slate-400 shrink-0 transition-transform duration-300 ${
-                    isOpen ? 'rotate-180 text-violet-500' : ''
+                  className={`w-4 h-4 text-brand-text-muted/80 shrink-0 transition-transform duration-300 ${
+                    isOpen ? 'rotate-180 text-blue-500' : ''
                   }`}
                   xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
@@ -1004,7 +1195,7 @@ function PracticeTests({ tests }) {
 
               {/* Chapters list — revealed when subject is open */}
               {isOpen && (
-                <div className="border-t border-violet-100 bg-slate-50/70 divide-y divide-slate-100">
+                <div className="border-t border-brand-border/40 bg-brand-surface-tint/70 divide-y divide-brand-border">
                   {chapters.map((chap) => {
                     const chapKey = `${subj}::${chap}`
                     const files = grouped[subj][chap]
@@ -1016,15 +1207,15 @@ function PracticeTests({ tests }) {
                         <button
                           type="button"
                           onClick={() => toggleChapter(chapKey)}
-                          className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/70 transition-colors"
+                          className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-brand-surface-tint transition-colors"
                         >
                           <span className="text-sm">{isChapOpen ? '📂' : '📁'}</span>
-                          <span className="flex-1 text-xs font-semibold text-slate-700 truncate">{chap}</span>
-                          <span className="shrink-0 rounded-full bg-violet-100 text-violet-700 text-[9px] font-bold px-1.5 py-0.5">
+                          <span className="flex-1 text-xs font-semibold text-brand-text truncate">{chap}</span>
+                          <span className="shrink-0 rounded-full bg-brand-accent/10 text-brand-accent text-[9px] font-bold px-1.5 py-0.5">
                             {files.length}
                           </span>
                           <svg
-                            className={`w-3.5 h-3.5 text-slate-400 shrink-0 transition-transform duration-200 ${
+                            className={`w-3.5 h-3.5 text-brand-text-muted/80 shrink-0 transition-transform duration-200 ${
                               isChapOpen ? 'rotate-180' : ''
                             }`}
                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
@@ -1041,27 +1232,27 @@ function PracticeTests({ tests }) {
                               return (
                                 <div
                                   key={file._id}
-                                  className="w-full rounded-xl border border-slate-200 bg-white p-3 flex items-start gap-3 hover:border-violet-200 hover:shadow-sm transition-all"
+                                  className="w-full rounded-2xl border border-brand-border bg-brand-surface p-3 flex items-start gap-3 hover:border-brand-border hover:shadow-sm transition-all"
                                 >
                                   <span className="text-lg mt-0.5 shrink-0">📝</span>
                                   <div className="flex-1 min-w-0">
-                                    <p className="text-xs font-semibold text-slate-900 leading-snug line-clamp-2">
+                                    <p className="text-xs font-semibold text-brand-text leading-snug line-clamp-2">
                                       {file.testTitle}
                                     </p>
                                     <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                                       {file.totalQuestions && (
-                                        <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide bg-violet-50 text-violet-700 ring-1 ring-violet-200">
+                                        <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide bg-brand-accent/10 text-brand-accent ring-1 ring-brand-accent/25">
                                           {file.totalQuestions} Questions
                                         </span>
                                       )}
-                                      <span className="text-[10px] text-slate-400">{formatDate(file.createdAt)}</span>
+                                      <span className="text-[10px] text-brand-text-muted/80">{formatDate(file.createdAt)}</span>
                                     </div>
                                   </div>
                                   <a
                                     href={file.documentUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="shrink-0 rounded-lg bg-violet-600 px-2.5 py-1.5 text-[10px] font-bold text-white hover:bg-violet-500 transition-colors whitespace-nowrap"
+                                    className="shrink-0 rounded-lg bg-brand-accent px-2.5 py-1.5 text-[10px] font-bold text-white dark:text-brand-bg hover:bg-brand-accent-hover transition-colors whitespace-nowrap shadow-sm"
                                   >
                                     Open ↗
                                   </a>
@@ -1082,3 +1273,4 @@ function PracticeTests({ tests }) {
     </section>
   )
 }
+

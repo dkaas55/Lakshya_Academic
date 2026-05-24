@@ -40,7 +40,7 @@ const getAttendanceSheet = async (req, res) => {
 
     // Fetch all active students currently enrolled in this batch
     const students = await StudentProfile.find({ batch, status: { $ne: "removed" } })
-      .populate("user", "name email")
+      .populate("user", "name username")
       .sort({ "user.name": 1 })
       .lean();
 
@@ -295,7 +295,7 @@ const getAttendanceHistory = async (req, res) => {
 
     // Fetch all students in this batch (excluding removed)
     const students = await StudentProfile.find({ batch, status: { $ne: "removed" } })
-      .populate("user", "name email")
+      .populate("user", "name username")
       .lean();
 
     // Build per-student summary
@@ -304,7 +304,7 @@ const getAttendanceHistory = async (req, res) => {
       summaryMap[String(s._id)] = {
         studentId: String(s._id),
         fullName: s.user?.name ?? "Unknown",
-        email: s.user?.email ?? "",
+        username: s.user?.username ?? "",
         studentClass: s.studentClass ?? "",
         batch: s.batch,
         present: 0,

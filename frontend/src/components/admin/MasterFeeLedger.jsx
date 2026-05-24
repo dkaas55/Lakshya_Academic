@@ -70,8 +70,8 @@ export default function MasterFeeLedger() {
     <div className="space-y-6">
       <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 className="text-base font-semibold text-slate-900">Master Fee Ledger</h2>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <h2 className="text-base font-semibold text-brand-text">Master Fee Ledger</h2>
+          <p className="text-xs text-brand-text-muted mt-0.5">
             System-wide view of all fee installments and dues.
           </p>
         </div>
@@ -79,7 +79,7 @@ export default function MasterFeeLedger() {
           type="button"
           onClick={loadData}
           disabled={loading}
-          className="self-start sm:self-auto rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50 transition-colors flex items-center gap-2"
+          className="self-start sm:self-auto rounded-lg border border-brand-border bg-brand-surface px-3 py-1.5 text-xs font-medium text-brand-text hover:bg-brand-surface-tint disabled:opacity-50 transition-colors flex items-center gap-2"
         >
           {loading && (
              <svg className="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -92,14 +92,14 @@ export default function MasterFeeLedger() {
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-1 border-b border-slate-200">
+      <div className="flex items-center gap-1 border-b border-brand-border">
         <button
           type="button"
           onClick={() => setActiveTab('pending')}
           className={`px-4 py-2.5 text-xs font-semibold border-b-2 transition-colors ${
             activeTab === 'pending'
-              ? 'border-indigo-600 text-indigo-600'
-              : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+              ? 'border-indigo-600 text-brand-primary'
+              : 'border-transparent text-brand-text-muted hover:text-brand-text hover:border-brand-border'
           }`}
         >
           Pending Dues Tracker
@@ -109,8 +109,8 @@ export default function MasterFeeLedger() {
           onClick={() => setActiveTab('history')}
           className={`px-4 py-2.5 text-xs font-semibold border-b-2 transition-colors ${
             activeTab === 'history'
-              ? 'border-emerald-600 text-emerald-600'
-              : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+              ? 'border-emerald-600 text-brand-primary'
+              : 'border-transparent text-brand-text-muted hover:text-brand-text hover:border-brand-border'
           }`}
         >
           Settled / History Ledger
@@ -124,7 +124,7 @@ export default function MasterFeeLedger() {
         accentColor={activeTab === 'pending' ? 'indigo' : 'emerald'}
       />
 
-      <section className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      <section className="rounded-2xl border border-brand-border bg-brand-surface shadow-sm overflow-hidden">
         {error && (
           <p
             role="alert"
@@ -135,33 +135,33 @@ export default function MasterFeeLedger() {
         )}
 
         {loading && (activeTab === 'pending' ? pendingDues.length === 0 : transactions.length === 0) ? (
-          <div className="px-4 py-12 text-center text-xs text-slate-500">
+          <div className="px-4 py-12 text-center text-xs text-brand-text-muted">
             Loading ledger data…
           </div>
         ) : activeTab === 'pending' ? (
           /* PENDING DUES TRACKER */
           filteredPending.length === 0 ? (
-            <div className="px-4 py-12 text-center text-xs text-slate-500">
+            <div className="px-4 py-12 text-center text-xs text-brand-text-muted">
               No pending dues found matching the filters.
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50/80">
-                    <th className="px-4 py-3 font-semibold text-slate-600">Student Name</th>
-                    <th className="px-4 py-3 font-semibold text-slate-600">Batch</th>
-                    <th className="px-4 py-3 font-semibold text-slate-600">Class</th>
-                    <th className="px-4 py-3 font-semibold text-slate-600 text-right">Pending Dues</th>
-                    <th className="px-4 py-3 font-semibold text-slate-600 text-center">Action</th>
+                  <tr className="border-b border-brand-border bg-brand-surface-tint/80">
+                    <th className="px-4 py-3 font-semibold text-brand-text">Student Name</th>
+                    <th className="px-4 py-3 font-semibold text-brand-text">Batch</th>
+                    <th className="px-4 py-3 font-semibold text-brand-text">Class</th>
+                    <th className="px-4 py-3 font-semibold text-brand-text text-right">Pending Dues</th>
+                    <th className="px-4 py-3 font-semibold text-brand-text text-center">Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-brand-border">
                   {filteredPending.map((due) => (
-                    <tr key={due.id} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="px-4 py-3 font-medium text-slate-900">{due.studentName}</td>
-                      <td className="px-4 py-3 text-slate-700">{due.batch}</td>
-                      <td className="px-4 py-3 text-slate-700">{due.studentClass || '—'}</td>
+                    <tr key={due.id} className="hover:bg-brand-surface-tint/60 transition-colors">
+                      <td className="px-4 py-3 font-medium text-brand-text">{due.studentName}</td>
+                      <td className="px-4 py-3 text-brand-text">{due.batch}</td>
+                      <td className="px-4 py-3 text-brand-text">{due.studentClass || '—'}</td>
                       <td className="px-4 py-3 font-bold text-amber-600 text-right">
                         {new Intl.NumberFormat('en-IN', {
                           style: 'currency',
@@ -178,7 +178,7 @@ export default function MasterFeeLedger() {
                             batch: due.batch,
                             studentClass: due.studentClass
                           })}
-                          className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-700 hover:bg-indigo-100 transition-colors"
+                          className="inline-flex items-center gap-1.5 rounded-lg bg-brand-primary/10 px-3 py-1.5 text-xs font-semibold text-brand-primary hover:bg-indigo-100 transition-colors"
                         >
                           Collect Fee
                         </button>
@@ -192,25 +192,25 @@ export default function MasterFeeLedger() {
         ) : (
           /* SETTLED / HISTORY LEDGER */
           filteredHistory.length === 0 ? (
-            <div className="px-4 py-12 text-center text-xs text-slate-500">
+            <div className="px-4 py-12 text-center text-xs text-brand-text-muted">
               No historical transactions found matching the filters.
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="min-w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50/80">
-                    <th className="px-4 py-3 font-semibold text-slate-600">Date & Time</th>
-                    <th className="px-4 py-3 font-semibold text-slate-600">Student Name</th>
-                    <th className="px-4 py-3 font-semibold text-slate-600">Batch</th>
-                    <th className="px-4 py-3 font-semibold text-slate-600 text-right">Amount Paid</th>
-                    <th className="px-4 py-3 font-semibold text-slate-600">Mode</th>
+                  <tr className="border-b border-brand-border bg-brand-surface-tint/80">
+                    <th className="px-4 py-3 font-semibold text-brand-text">Date & Time</th>
+                    <th className="px-4 py-3 font-semibold text-brand-text">Student Name</th>
+                    <th className="px-4 py-3 font-semibold text-brand-text">Batch</th>
+                    <th className="px-4 py-3 font-semibold text-brand-text text-right">Amount Paid</th>
+                    <th className="px-4 py-3 font-semibold text-brand-text">Mode</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-brand-border">
                   {filteredHistory.map((tx) => (
-                    <tr key={tx.id} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="px-4 py-3 text-slate-600 whitespace-nowrap">
+                    <tr key={tx.id} className="hover:bg-brand-surface-tint/60 transition-colors">
+                      <td className="px-4 py-3 text-brand-text whitespace-nowrap">
                         {new Intl.DateTimeFormat('en-IN', {
                           day: 'numeric',
                           month: 'short',
@@ -219,16 +219,16 @@ export default function MasterFeeLedger() {
                           minute: '2-digit',
                         }).format(new Date(tx.paidAt))}
                       </td>
-                      <td className="px-4 py-3 font-medium text-slate-900">{tx.studentName}</td>
-                      <td className="px-4 py-3 text-slate-700">{tx.batch}</td>
-                      <td className="px-4 py-3 font-semibold text-emerald-700 text-right">
+                      <td className="px-4 py-3 font-medium text-brand-text">{tx.studentName}</td>
+                      <td className="px-4 py-3 text-brand-text">{tx.batch}</td>
+                      <td className="px-4 py-3 font-semibold text-brand-primary text-right">
                         {new Intl.NumberFormat('en-IN', {
                           style: 'currency',
                           currency: 'INR',
                           maximumFractionDigits: 0,
                         }).format(tx.amount)}
                       </td>
-                      <td className="px-4 py-3 text-slate-700">{tx.method || '—'}</td>
+                      <td className="px-4 py-3 text-brand-text">{tx.method || '—'}</td>
                     </tr>
                   ))}
                 </tbody>

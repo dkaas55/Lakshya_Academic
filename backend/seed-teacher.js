@@ -23,10 +23,10 @@ async function run() {
   await mongoose.connect(uri, { serverSelectionTimeoutMS: 8000 });
   console.log("✅  Connected\n");
 
-  const existing = await User.findOne({ email: "teacher@institute.com" });
+  const existing = await User.findOne({ username: "teacher" });
   if (existing) {
     console.log("ℹ️   Teacher account already exists:");
-    console.log(`    Email   : ${existing.email}`);
+    console.log(`    Username: ${existing.username}`);
     console.log(`    Batches : ${existing.assignedBatches.join(", ")}`);
     await mongoose.disconnect();
     return;
@@ -36,7 +36,7 @@ async function run() {
 
   const teacher = await User.create({
     name: "Priya Sharma",
-    email: "teacher@institute.com",
+    username: "teacher",
     passwordHash,
     role: "teacher",
     assignedBatches: ["Morning Batch A", "Morning Batch B"],
@@ -44,7 +44,7 @@ async function run() {
 
   console.log("✅  Teacher account created:");
   console.log(`    Name    : ${teacher.name}`);
-  console.log(`    Email   : ${teacher.email}`);
+  console.log(`    Username: ${teacher.username}`);
   console.log(`    Password: Teacher@123`);
   console.log(`    Batches : ${teacher.assignedBatches.join(", ")}`);
   console.log("\n🏁  Sign in at http://localhost:5173/login with role = Teacher");

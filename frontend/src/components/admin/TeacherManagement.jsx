@@ -11,7 +11,7 @@ const BATCH_OPTIONS = [
 
 const initialForm = {
   name: '',
-  email: '',
+  username: '',
   password: '',
   joiningDate: new Date().toISOString().split('T')[0],
   compensationType: 'fixed',
@@ -66,7 +66,7 @@ export default function TeacherManagement() {
     setEditingTeacher(teacher)
     setForm({
       name: teacher.name,
-      email: teacher.email, // Readonly in edit usually, but keeping it simple
+      username: teacher.username, // Readonly in edit usually, but keeping it simple
       password: '', // Blank for update
       joiningDate: teacher.joiningDate ? new Date(teacher.joiningDate).toISOString().split('T')[0] : '',
       compensationType: teacher.compensationType || 'fixed',
@@ -124,7 +124,7 @@ export default function TeacherManagement() {
       }
 
       if (editingTeacher) {
-        // Edit mode (no email/password change supported in this basic endpoint yet unless added to backend, but we didn't add email/password updates to PUT)
+        // Edit mode (no username/password change supported in this basic endpoint yet unless added to backend, but we didn't add username/password updates to PUT)
         const { data } = await api.put(`/admin/teachers/${editingTeacher.id}`, payload)
         if (data.success) {
           setTeachers(teachers.map(t => t.id === editingTeacher.id ? data.data : t))
@@ -134,12 +134,12 @@ export default function TeacherManagement() {
         }
       } else {
         // Create mode
-        if (!form.email || !form.password) {
+        if (!form.username || !form.password) {
           setFormError('Email and Password are required for a new teacher.')
           setSubmitting(false)
           return
         }
-        payload.email = form.email.trim()
+        payload.username = form.username.trim()
         payload.password = form.password
         
         const { data } = await api.post('/admin/teachers', payload)
@@ -164,71 +164,71 @@ export default function TeacherManagement() {
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-base font-semibold text-slate-900">Teacher Management</h2>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <h2 className="text-base font-semibold text-brand-text">Teacher Management</h2>
+          <p className="text-xs text-brand-text-muted mt-0.5">
             Onboard teachers, configure payroll, and allocate batches.
           </p>
         </div>
         <button
           onClick={openAddModal}
-          className="rounded-lg bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-500 transition-colors"
+          className="rounded-lg bg-brand-primary px-4 py-2 text-xs font-semibold text-brand-surface hover:bg-brand-primary/100 transition-colors"
         >
           + Add Teacher
         </button>
       </div>
 
       {loading ? (
-        <div className="py-12 text-center text-sm text-slate-500">Loading teachers...</div>
+        <div className="py-12 text-center text-sm text-brand-text-muted">Loading teachers...</div>
       ) : error ? (
         <div className="rounded-xl border border-red-100 bg-red-50 p-6 text-center text-sm text-red-700">
           {error}
         </div>
       ) : teachers.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-slate-200 bg-white p-12 text-center">
-          <p className="text-sm text-slate-500">No teachers found.</p>
+        <div className="rounded-2xl border border-dashed border-brand-border bg-brand-surface p-12 text-center">
+          <p className="text-sm text-brand-text-muted">No teachers found.</p>
         </div>
       ) : (
-        <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+        <div className="rounded-2xl border border-brand-border bg-brand-surface shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-slate-100 bg-slate-50">
-                  <th className="px-4 py-3 font-semibold text-slate-600">Name & Email</th>
-                  <th className="px-4 py-3 font-semibold text-slate-600">Payroll</th>
-                  <th className="px-4 py-3 font-semibold text-slate-600">Batches</th>
-                  <th className="px-4 py-3 font-semibold text-slate-600 text-right">Actions</th>
+                <tr className="border-b border-brand-border bg-brand-surface-tint">
+                  <th className="px-4 py-3 font-semibold text-brand-text">Name & Email</th>
+                  <th className="px-4 py-3 font-semibold text-brand-text">Payroll</th>
+                  <th className="px-4 py-3 font-semibold text-brand-text">Batches</th>
+                  <th className="px-4 py-3 font-semibold text-brand-text text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-brand-border">
                 {teachers.map(t => (
-                  <tr key={t.id} className="hover:bg-slate-50/50 transition-colors">
+                  <tr key={t.id} className="hover:bg-brand-surface-tint/50 transition-colors">
                     <td className="px-4 py-3">
-                      <p className="font-semibold text-slate-900">{t.name}</p>
-                      <p className="text-[10px] text-slate-500">{t.email}</p>
+                      <p className="font-semibold text-brand-text">{t.name}</p>
+                      <p className="text-[10px] text-brand-text-muted">{t.username}</p>
                     </td>
                     <td className="px-4 py-3">
                       {t.compensationType === 'fixed' ? (
-                        <p className="font-medium text-slate-800">₹{t.salaryAmount ?? 0} <span className="text-[10px] text-slate-400 font-normal">/ month</span></p>
+                        <p className="font-medium text-brand-text">₹{t.salaryAmount ?? 0} <span className="text-[10px] text-brand-text-muted/75 font-normal">/ month</span></p>
                       ) : t.compensationType === 'percentage' ? (
-                        <p className="font-medium text-indigo-700">{t.studentPercentage ?? 0}% <span className="text-[10px] text-slate-400 font-normal">split</span></p>
+                        <p className="font-medium text-brand-primary">{t.studentPercentage ?? 0}% <span className="text-[10px] text-brand-text-muted/75 font-normal">split</span></p>
                       ) : (
-                        <p className="text-slate-400 text-[10px] italic">Not set</p>
+                        <p className="text-brand-text-muted/75 text-[10px] italic">Not set</p>
                       )}
                       {t.joiningDate && (
-                        <p className="text-[10px] text-slate-400 mt-0.5">Joined {new Date(t.joiningDate).toLocaleDateString()}</p>
+                        <p className="text-[10px] text-brand-text-muted/75 mt-0.5">Joined {new Date(t.joiningDate).toLocaleDateString()}</p>
                       )}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-1">
                         {t.assignedBatches?.length > 0 ? t.assignedBatches.map(b => (
-                          <span key={b} className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-600 border border-slate-200">
+                          <span key={b} className="rounded-full bg-brand-surface-tint px-2 py-0.5 text-[10px] text-brand-text border border-brand-border">
                             {b}
                           </span>
-                        )) : <span className="text-slate-400 italic text-[10px]">No batches</span>}
+                        )) : <span className="text-brand-text-muted/75 italic text-[10px]">No batches</span>}
                       </div>
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <button onClick={() => openEditModal(t)} className="text-indigo-600 hover:text-indigo-800 font-medium mr-3">Edit</button>
+                      <button onClick={() => openEditModal(t)} className="text-brand-primary hover:text-indigo-800 font-medium mr-3">Edit</button>
                       <button onClick={() => handleDelete(t.id, t.name)} className="text-red-600 hover:text-red-800 font-medium">Remove</button>
                     </td>
                   </tr>
@@ -241,13 +241,13 @@ export default function TeacherManagement() {
 
       {/* Teacher Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50/50">
-              <h3 className="font-semibold text-slate-900">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-text/30 backdrop-blur-sm">
+          <div className="bg-brand-surface rounded-2xl border border-brand-border shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-5 py-4 border-b border-brand-border bg-brand-surface-tint/50">
+              <h3 className="font-semibold text-brand-text">
                 {editingTeacher ? 'Edit Teacher' : 'Onboard New Teacher'}
               </h3>
-              <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600">✕</button>
+              <button onClick={() => setShowModal(false)} className="text-brand-text-muted/75 hover:text-brand-text">✕</button>
             </div>
             
             <form onSubmit={handleSubmit} className="p-5 space-y-6">
@@ -259,49 +259,50 @@ export default function TeacherManagement() {
 
               {/* Basic Info */}
               <div>
-                <h4 className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-3 border-b pb-1">Basic Profile</h4>
+                <h4 className="text-[10px] font-bold uppercase tracking-wider text-brand-text-muted/75 mb-3 border-b pb-1">Basic Profile</h4>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="block text-xs font-medium text-slate-700 mb-1">Full Name</label>
+                    <label className="block text-xs font-medium text-brand-text mb-1">Full Name</label>
                     <input
                       required
                       type="text"
                       value={form.name}
                       onChange={e => setForm({...form, name: e.target.value})}
-                      className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                      className="w-full rounded-lg border border-brand-border px-3 py-2 text-sm focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none"
                     />
                   </div>
                   {!editingTeacher && (
                     <>
+                        <div>
+                          <label className="block text-xs font-medium text-brand-text mb-1">Username</label>
+                          <input
+                            type="text"
+                            required
+                            disabled={!!editingTeacher}
+                            value={form.username}
+                            onChange={e => setForm({...form, username: e.target.value})}
+                            className="w-full rounded-lg border border-brand-border px-3 py-2 text-sm text-brand-text focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary focus:border-indigo-500 disabled:opacity-50"
+                          />
+                        </div>
                       <div>
-                        <label className="block text-xs font-medium text-slate-700 mb-1">Email</label>
-                        <input
-                          required
-                          type="email"
-                          value={form.email}
-                          onChange={e => setForm({...form, email: e.target.value})}
-                          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-medium text-slate-700 mb-1">Password</label>
+                        <label className="block text-xs font-medium text-brand-text mb-1">Password</label>
                         <input
                           required
                           type="password"
                           value={form.password}
                           onChange={e => setForm({...form, password: e.target.value})}
-                          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                          className="w-full rounded-lg border border-brand-border px-3 py-2 text-sm focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none"
                         />
                       </div>
                     </>
                   )}
                   <div>
-                    <label className="block text-xs font-medium text-slate-700 mb-1">Joining Date</label>
+                    <label className="block text-xs font-medium text-brand-text mb-1">Joining Date</label>
                     <input
                       type="date"
                       value={form.joiningDate}
                       onChange={e => setForm({...form, joiningDate: e.target.value})}
-                      className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                      className="w-full rounded-lg border border-brand-border px-3 py-2 text-sm focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none"
                     />
                   </div>
                 </div>
@@ -309,14 +310,14 @@ export default function TeacherManagement() {
 
               {/* Payroll Configuration */}
               <div>
-                <h4 className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-3 border-b pb-1">Payroll Configuration</h4>
+                <h4 className="text-[10px] font-bold uppercase tracking-wider text-brand-text-muted/75 mb-3 border-b pb-1">Payroll Configuration</h4>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="block text-xs font-medium text-slate-700 mb-1">Compensation Type</label>
+                    <label className="block text-xs font-medium text-brand-text mb-1">Compensation Type</label>
                     <select
                       value={form.compensationType}
                       onChange={e => setForm({...form, compensationType: e.target.value})}
-                      className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                      className="w-full rounded-lg border border-brand-border px-3 py-2 text-sm focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none"
                     >
                       <option value="fixed">Fixed Monthly Salary</option>
                       <option value="percentage">Percentage Split (per student)</option>
@@ -325,26 +326,26 @@ export default function TeacherManagement() {
                   
                   {form.compensationType === 'fixed' ? (
                     <div>
-                      <label className="block text-xs font-medium text-slate-700 mb-1">Monthly Salary (₹)</label>
+                      <label className="block text-xs font-medium text-brand-text mb-1">Monthly Salary (₹)</label>
                       <input
                         type="number"
                         min="0"
                         value={form.salaryAmount}
                         onChange={e => setForm({...form, salaryAmount: e.target.value})}
-                        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                        className="w-full rounded-lg border border-brand-border px-3 py-2 text-sm focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none"
                         placeholder="e.g. 50000"
                       />
                     </div>
                   ) : (
                     <div>
-                      <label className="block text-xs font-medium text-slate-700 mb-1">Student Percentage Split (%)</label>
+                      <label className="block text-xs font-medium text-brand-text mb-1">Student Percentage Split (%)</label>
                       <input
                         type="number"
                         min="0"
                         max="100"
                         value={form.studentPercentage}
                         onChange={e => setForm({...form, studentPercentage: e.target.value})}
-                        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                        className="w-full rounded-lg border border-brand-border px-3 py-2 text-sm focus:ring-2 focus:ring-brand-primary focus:border-brand-primary outline-none"
                         placeholder="e.g. 30"
                       />
                     </div>
@@ -354,7 +355,7 @@ export default function TeacherManagement() {
 
               {/* Batch Allocation */}
               <div>
-                <h4 className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-3 border-b pb-1">Batch Allocation</h4>
+                <h4 className="text-[10px] font-bold uppercase tracking-wider text-brand-text-muted/75 mb-3 border-b pb-1">Batch Allocation</h4>
                 <div className="flex flex-wrap gap-2">
                   {BATCH_OPTIONS.map(b => {
                     const isSelected = form.assignedBatches.includes(b)
@@ -365,8 +366,8 @@ export default function TeacherManagement() {
                         onClick={() => handleBatchToggle(b)}
                         className={`rounded-full px-3 py-1.5 text-xs font-medium border transition-colors ${
                           isSelected 
-                            ? 'bg-indigo-50 border-indigo-200 text-indigo-700'
-                            : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
+                            ? 'bg-brand-primary/10 border-indigo-200 text-brand-primary'
+                            : 'bg-brand-surface border-brand-border text-brand-text hover:border-brand-border'
                         }`}
                       >
                         {isSelected && <span className="mr-1">✓</span>}
@@ -375,21 +376,21 @@ export default function TeacherManagement() {
                     )
                   })}
                 </div>
-                <p className="text-[10px] text-slate-400 mt-2">Select the batches this teacher is responsible for handling.</p>
+                <p className="text-[10px] text-brand-text-muted/75 mt-2">Select the batches this teacher is responsible for handling.</p>
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+              <div className="flex justify-end gap-3 pt-4 border-t border-brand-border">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="rounded-lg px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100"
+                  className="rounded-lg px-4 py-2 text-xs font-medium text-brand-text hover:bg-brand-surface-tint"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="rounded-lg bg-indigo-600 px-5 py-2 text-xs font-semibold text-white hover:bg-indigo-500 disabled:opacity-60"
+                  className="rounded-lg bg-brand-primary px-5 py-2 text-xs font-semibold text-brand-surface hover:bg-brand-primary/100 disabled:opacity-60"
                 >
                   {submitting ? 'Saving...' : 'Save Teacher'}
                 </button>
